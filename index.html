@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Thermometer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <div id="dashboard">
+    <div>Coins: <span id="coins">50</span></div>
+    <div>Wins: <span id="wins">0</span></div>
+  </div>
+
+  <div id="categoryScreen">
+    <h2>Select Category</h2>
+    <button onclick="selectCategory('Food')">Food</button>
+    <button onclick="selectCategory('Animals')">Animals</button>
+    <button onclick="selectCategory('Tech')">Tech</button>
+    <button onclick="selectCategory('Movies')">Movies</button>
+    <button onclick="selectCategory('Music')">Music</button>
+    <button onclick="selectCategory('Sports')">Sports</button>
+  </div>
+
+  <div id="difficultyScreen" class="hidden">
+    <h2>Select Difficulty</h2>
+    <button onclick="selectDifficulty('Beginner')">Beginner</button>
+    <button onclick="selectDifficulty('Novice')">Novice</button>
+    <button onclick="selectDifficulty('Expert')">Expert</button>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+    <div id="guessArea">
+  <input id="guessInput" type="text" placeholder="Type your guess">
+  <button onclick="submitGuess()">Submit Guess</button>
+</div>
+
+    <div id="thermometer">
+      <div id="thermoFill"></div>
+    </div>
+
+    <div id="emojiFlash"></div>
+
+    <div id="lastGuesses">
+      <h3>Last Guesses</h3>
+      <ul id="guessList"></ul>
+    </div>
+
+    <input id="guessInput" type="text" placeholder="Enter your guess">
+    <button onclick="submitGuess()">Submit Guess</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
