@@ -65,10 +65,15 @@ function submitGuess() {
   input.value = ""
 
   if (guess === solution) {
-    wins++
-    updateDashboard()
+  updateThermometer(100)
+  flashWinEmoji()
+  wins++
+  updateDashboard()
+  launchConfetti()
+  setTimeout(() => {
     alert("You win")
-  }
+  }, 300)
+}
 
   if (tries === 0) {
     alert("Game over. Word was " + solution)
