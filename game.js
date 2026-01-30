@@ -84,10 +84,15 @@ function flashEmoji(value) {
   if (value > 40) emoji = "☀️"
   if (value > 60) emoji = "🌶️"
   if (value > 80) emoji = "🔥"
-  el.innerText = emoji
-  setTimeout(() => el.innerText = "", 500)
-}
 
+  el.innerText = emoji
+  el.classList.add("show")
+
+  setTimeout(() => {
+    el.classList.remove("show")
+  }, 500)
+}
+  
 function updateGuessList(guess, heat) {
   const list = document.getElementById("guessList")
   const item = document.createElement("li")
