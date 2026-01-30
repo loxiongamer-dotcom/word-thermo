@@ -1,3 +1,6 @@
+let hintsLeft = 0
+let revealedIndexes = []
+  
 let category = ""
 let difficulty = ""
 let solution = ""
@@ -33,7 +36,15 @@ function startGame() {
   solution = list[Math.floor(Math.random() * list.length)].toLowerCase()
 
   document.getElementById("wordLength").innerText = solution.length
-  updateDashboard()
+  updateDashboard
+  
+  if (difficulty === "Beginner") hintsLeft = 1
+  if (difficulty === "Novice") hintsLeft = 2
+  if (difficulty === "Expert") hintsLeft = 3
+
+revealedIndexes = []
+updateHints()
+renderHintDisplay()
 }
 
 function submitGuess() {
@@ -106,4 +117,37 @@ function updateGuessList(guess, heat) {
 function updateDashboard() {
   document.getElementById("coins").innerText = coins
   document.getElementById("wins").innerText = wins
+}
+
+function useHint() {
+  if (hintsLeft === 0 && coins < 20) return
+
+  if (hintsLeft === 0) {
+    coins -= 20
+  } else {
+    hintsLeft--
+  }
+
+  let index
+  do {
+    index = Math.floor(Math.random() * solution.length)
+  } while (revealedIndexes.includes(index))
+
+  revealedIndexes.push(index)
+
+  updateDashboard()
+  updateHints()
+  renderHintDisplay()
+}
+
+function updateHints() {
+  document.getElementById("hintsLeft").innerText = hintsLeft
+}
+
+function renderHintDisplay() {
+  let display = ""
+  for (let i = 0; i < solution.length; i++) {
+    display += revealedIndexes.includes(i) ? solution[i] : "_"
+  }
+  document.getElementById("hintDisplay").innerText = display
 }
