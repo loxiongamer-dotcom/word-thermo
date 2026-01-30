@@ -51,7 +51,14 @@
 
   <div id="emojiFlash"></div>
 
-  <div id="lastGuesses">
+    <div id="hintBar">
+  <div>Hints Left: <span id="hintsLeft"></span></div>
+  <button onclick="useHint()">Get Hint</button>
+</div>
+
+<div id="hintDisplay"></div>
+    
+    <div id="lastGuesses">
     <h3>Last Guesses</h3>
     <ul id="guessList"></ul>
   </div>
