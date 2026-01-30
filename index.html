@@ -32,28 +32,30 @@
   </div>
 
   <div id="gameScreen" class="hidden">
-    <div id="guessArea">
-  <input id="guessInput" type="text" placeholder="Type your guess">
-  <button onclick="submitGuess()">Submit Guess</button>
-</div>
 
-    <div id="thermometer">
-      <div id="thermoFill"></div>
-    </div>
+  <div id="infoBar">
+    <div>Word Length: <span id="wordLength"></span></div>
+    <div>Tries Left: <span id="tries">8</span></div>
+  </div>
 
-    <div id="emojiFlash"></div>
+  <div id="thermometer">
+    <div id="thermoFill"></div>
+  </div>
 
-    <div id="lastGuesses">
-      <h3>Last Guesses</h3>
-      <ul id="guessList"></ul>
-    </div>
+  <div id="emojiFlash"></div>
 
-    <input id="guessInput" type="text" placeholder="Enter your guess">
+  <div id="lastGuesses">
+    <h3>Last Guesses</h3>
+    <ul id="guessList"></ul>
+  </div>
+
+  <div id="guessArea">
+    <input id="guessInput" type="text" placeholder="Type your guess">
     <button onclick="submitGuess()">Submit Guess</button>
   </div>
 
 </div>
-
+   
 <script src="game.js"></script>
 </body>
 </html>
