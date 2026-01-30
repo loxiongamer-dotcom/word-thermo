@@ -116,3 +116,30 @@ input {
   display: flex;
   flex-direction: column;
 }
+
+#thermometerWrap {
+  margin: 16px 0;
+}
+
+#thermoScale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+#emojiFlash {
+  text-align: center;
+  font-size: 44px;
+  height: 48px;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+#emojiFlash.show {
+  opacity: 1;
+  transform: scale(1.3);
+}
