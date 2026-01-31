@@ -168,19 +168,36 @@ function flashWinEmoji() {
 }
 
 function launchConfetti() {
-  for (let i = 0; i < 60; i++) {
-    const piece = document.createElement("div")
-    piece.className = "confetti"
+  const colors = [
+    "#ff4d4d",
+    "#ffd93d",
+    "#4dff88",
+    "#4dd2ff",
+    "#b84dff"
+  ]
 
-    piece.style.left = Math.random() * 100 + "vw"
-    piece.style.background = `hsl(${Math.random() * 360}, 90%, 60%)`
-    piece.style.animationDuration = 1 + Math.random() * 1.5 + "s"
-    piece.style.transform = `translateX(${Math.random() * 200 - 100}px)`
+  for (let i = 0; i < 120; i++) {
+    const confetti = document.createElement("div")
+    confetti.className = "confetti"
 
-    document.body.appendChild(piece)
+    const size = Math.random() * 6 + 6
+    confetti.style.width = size / 2 + "px"
+    confetti.style.height = size * 2 + "px"
+
+    confetti.style.left = Math.random() * 100 + "vw"
+    confetti.style.backgroundColor =
+      colors[Math.floor(Math.random() * colors.length)]
+
+    confetti.style.animationDuration =
+      2 + Math.random() * 2 + "s"
+
+    confetti.style.transform =
+      "rotate(" + Math.random() * 360 + "deg)"
+
+    document.body.appendChild(confetti)
 
     setTimeout(() => {
-      piece.remove()
-    }, 2500)
+      confetti.remove()
+    }, 4000)
   }
 }
