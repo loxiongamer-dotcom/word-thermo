@@ -161,3 +161,20 @@ input {
   letter-spacing: 6px;
   margin-bottom: 12px;
 }
+
+.confetti {
+  position: fixed;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  background: red;
+  animation: fall 1.2s linear forwards;
+  z-index: 999;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
