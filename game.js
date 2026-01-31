@@ -10,6 +10,10 @@ let guesses = []
 let coins = 50
 let wins = 0
 
+document.addEventListener(“DOMContentLoaded”, () => {
+document.getElementById(“winOverlay”).classList.add(“hidden”)
+})
+  
 const words = {
   Food: {
     Beginner: ["apple", "bread", "cheese", "onion", "pizza"],
@@ -194,13 +198,16 @@ function playAgain() {
 }
 
 function resetGame() {
-  gameActive = false
-  category = ""
-  difficulty = ""
-  solution = ""
-  guesses = []
-  revealedIndexes = []
+gameActive = false
 
-  document.getElementById("gameScreen").classList.add("hidden")
-  document.getElementById("categoryScreen").classList.remove("hidden")
+category = “”
+difficulty = “”
+solution = “”
+
+guesses = []
+revealedIndexes = []
+
+document.getElementById(“gameScreen”).classList.add(“hidden”)
+document.getElementById(“difficultyScreen”).classList.add(“hidden”)
+document.getElementById(“categoryScreen”).classList.remove(“hidden”)
 }
