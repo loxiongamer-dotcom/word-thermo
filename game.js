@@ -168,15 +168,19 @@ function flashWinEmoji() {
 }
 
 function launchConfetti() {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     const piece = document.createElement("div")
     piece.className = "confetti"
+
     piece.style.left = Math.random() * 100 + "vw"
-    piece.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`
+    piece.style.background = `hsl(${Math.random() * 360}, 90%, 60%)`
+    piece.style.animationDuration = 1 + Math.random() * 1.5 + "s"
+    piece.style.transform = `translateX(${Math.random() * 200 - 100}px)`
+
     document.body.appendChild(piece)
 
     setTimeout(() => {
       piece.remove()
-    }, 1200)
+    }, 2500)
   }
 }
