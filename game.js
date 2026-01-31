@@ -1,3 +1,4 @@
+let gameActive = false
 let hintsLeft = 0
 let revealedIndexes = []
   
@@ -29,6 +30,7 @@ function selectDifficulty(diff) {
 }
 
 function startGame() {
+  gameActive = true
   tries = 8
   guesses = []
   document.getElementById("guessList").innerHTML = ""
@@ -67,13 +69,14 @@ function submitGuess() {
 
   input.value = ""
 
-  if (guess === solution) {
+  if (gameActive && guess === solution) {
   updateThermometer(100)
   flashWinEmoji()
   wins++
   updateDashboard()
   launchConfetti()
   showWinScreen()
+  gameActive = false
 }
 
   if (tries === 0) {
