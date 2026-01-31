@@ -164,17 +164,24 @@ input {
 
 .confetti {
   position: fixed;
-  top: -10px;
-  width: 8px;
-  height: 8px;
-  background: red;
-  animation: fall 1.2s linear forwards;
-  z-index: 999;
+  top: -20px;
+  width: 12px;
+  height: 12px;
+  opacity: 0.9;
+  border-radius: 2px;
+  z-index: 9999;
+  animation-name: confettiFall;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 
-@keyframes fall {
-  to {
-    transform: translateY(100vh) rotate(360deg);
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
     opacity: 0;
   }
 }
