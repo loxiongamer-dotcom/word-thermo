@@ -29,6 +29,9 @@ function selectDifficulty(diff) {
 }
 
 function startGame() {
+  tries = 8
+  guesses = []
+  document.getElementById("guessList").innerHTML = ""
   document.getElementById("difficultyScreen").classList.add("hidden")
   document.getElementById("gameScreen").classList.remove("hidden")
 
@@ -70,9 +73,7 @@ function submitGuess() {
   wins++
   updateDashboard()
   launchConfetti()
-  setTimeout(() => {
-    alert("You win")
-  }, 300)
+  showWinScreen()
 }
 
   if (tries === 0) {
@@ -200,4 +201,14 @@ function launchConfetti() {
       confetti.remove()
     }, 4000)
   }
+}
+
+function showWinScreen() {
+  document.getElementById("winWord").innerText = solution.toUpperCase()
+  document.getElementById("winOverlay").classList.remove("hidden")
+}
+
+function playAgain() {
+  document.getElementById("winOverlay").classList.add("hidden")
+  resetGame()
 }
