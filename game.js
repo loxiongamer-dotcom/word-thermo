@@ -156,3 +156,27 @@ function renderHintDisplay() {
   }
   document.getElementById("hintDisplay").innerText = display
 }
+
+function flashWinEmoji() {
+  const el = document.getElementById("emojiFlash")
+  el.innerText = "🔥"
+  el.classList.add("show")
+
+  setTimeout(() => {
+    el.classList.remove("show")
+  }, 700)
+}
+
+function launchConfetti() {
+  for (let i = 0; i < 30; i++) {
+    const piece = document.createElement("div")
+    piece.className = "confetti"
+    piece.style.left = Math.random() * 100 + "vw"
+    piece.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`
+    document.body.appendChild(piece)
+
+    setTimeout(() => {
+      piece.remove()
+    }, 1200)
+  }
+}
