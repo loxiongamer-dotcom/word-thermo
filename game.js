@@ -1,7 +1,7 @@
 let gameActive = false
 let hintsLeft = 0
 let revealedIndexes = []
-  
+
 let category = ""
 let difficulty = ""
 let solution = ""
@@ -33,6 +33,8 @@ function startGame() {
   gameActive = true
   tries = 8
   guesses = []
+  revealedIndexes = []
+
   document.getElementById("guessList").innerHTML = ""
   document.getElementById("difficultyScreen").classList.add("hidden")
   document.getElementById("gameScreen").classList.remove("hidden")
@@ -41,18 +43,21 @@ function startGame() {
   solution = list[Math.floor(Math.random() * list.length)].toLowerCase()
 
   document.getElementById("wordLength").innerText = solution.length
-  updateDashboard
-  
+  document.getElementById("tries").innerText = tries
+
   if (difficulty === "Beginner") hintsLeft = 1
   if (difficulty === "Novice") hintsLeft = 2
   if (difficulty === "Expert") hintsLeft = 3
 
-revealedIndexes = []
-updateHints()
-renderHintDisplay()
+  updateDashboard()
+  updateHints()
+  renderHintDisplay()
+  updateThermometer(0)
 }
 
 function submitGuess() {
+  if (!gameActive) return
+
   const input = document.getElementById("guessInput")
   const guess = input.value.toLowerCase().trim()
   if (!guess) return
@@ -69,17 +74,19 @@ function submitGuess() {
 
   input.value = ""
 
-  if (gameActive && guess === solution) {
-  updateThermometer(100)
-  flashWinEmoji()
-  wins++
-  updateDashboard()
-  launchConfetti()
-  showWinScreen()
-  gameActive = false
-}
+  if (guess === solution) {
+    updateThermometer(100)
+    flashWinEmoji()
+    wins++
+    updateDashboard()
+    launchConfetti()
+    showWinScreen()
+    gameActive = false
+    return
+  }
 
   if (tries === 0) {
+    gameActive = false
     alert("Game over. Word was " + solution)
   }
 }
@@ -88,9 +95,9 @@ function calculateHeat(guess) {
   let matches = 0
   for (let i = 0; i < guess.length; i++) {
     if (solution.includes(guess[i])) matches++
-    if (solution[i] === guess[i]) matches += 1
+    if (solution[i] === guess[i]) matches += 2
   }
-  return Math.min(100, Math.floor((matches / solution.length) * 25))
+  return Math.min(100, Math.floor((matches / solution.length) * 20))
 }
 
 function updateThermometer(value) {
@@ -107,12 +114,9 @@ function flashEmoji(value) {
 
   el.innerText = emoji
   el.classList.add("show")
-
-  setTimeout(() => {
-    el.classList.remove("show")
-  }, 500)
+  setTimeout(() => el.classList.remove("show"), 500)
 }
-  
+
 function updateGuessList(guess, heat) {
   const list = document.getElementById("guessList")
   const item = document.createElement("li")
@@ -129,13 +133,11 @@ function updateDashboard() {
 }
 
 function useHint() {
+  if (!gameActive) return
   if (hintsLeft === 0 && coins < 20) return
 
-  if (hintsLeft === 0) {
-    coins -= 20
-  } else {
-    hintsLeft--
-  }
+  if (hintsLeft === 0) coins -= 20
+  else hintsLeft--
 
   let index
   do {
@@ -143,7 +145,6 @@ function useHint() {
   } while (revealedIndexes.includes(index))
 
   revealedIndexes.push(index)
-
   updateDashboard()
   updateHints()
   renderHintDisplay()
@@ -165,53 +166,41 @@ function flashWinEmoji() {
   const el = document.getElementById("emojiFlash")
   el.innerText = "🔥"
   el.classList.add("show")
-
-  setTimeout(() => {
-    el.classList.remove("show")
-  }, 700)
+  setTimeout(() => el.classList.remove("show"), 700)
 }
 
 function launchConfetti() {
-  const colors = [
-    "#ff4d4d",
-    "#ffd93d",
-    "#4dff88",
-    "#4dd2ff",
-    "#b84dff"
-  ]
+  const colors = ["#ff4d4d", "#ffd93d", "#4dff88", "#4dd2ff", "#b84dff"]
 
   for (let i = 0; i < 120; i++) {
-    const confetti = document.createElement("div")
-    confetti.className = "confetti"
-
-    const size = Math.random() * 6 + 6
-    confetti.style.width = size / 2 + "px"
-    confetti.style.height = size * 2 + "px"
-
-    confetti.style.left = Math.random() * 100 + "vw"
-    confetti.style.backgroundColor =
-      colors[Math.floor(Math.random() * colors.length)]
-
-    confetti.style.animationDuration =
-      2 + Math.random() * 2 + "s"
-
-    confetti.style.transform =
-      "rotate(" + Math.random() * 360 + "deg)"
-
-    document.body.appendChild(confetti)
-
-    setTimeout(() => {
-      confetti.remove()
-    }, 4000)
+    const c = document.createElement("div")
+    c.className = "confetti"
+    c.style.left = Math.random() * 100 + "vw"
+    c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+    c.style.animationDuration = 2 + Math.random() * 2 + "s"
+    document.body.appendChild(c)
+    setTimeout(() => c.remove(), 4000)
   }
 }
 
 function showWinScreen() {
-  document.getElementById("winWord").innerText = solution.toUpperCase()
+  document.getElementById("winWord").innerText = solution
   document.getElementById("winOverlay").classList.remove("hidden")
 }
 
 function playAgain() {
   document.getElementById("winOverlay").classList.add("hidden")
   resetGame()
+}
+
+function resetGame() {
+  gameActive = false
+  category = ""
+  difficulty = ""
+  solution = ""
+  guesses = []
+  revealedIndexes = []
+
+  document.getElementById("gameScreen").classList.add("hidden")
+  document.getElementById("categoryScreen").classList.remove("hidden")
 }
