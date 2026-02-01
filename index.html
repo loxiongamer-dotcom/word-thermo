@@ -4,24 +4,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Word Thermometer</title>
   <link rel="stylesheet" href="style.css">
-  <!-- PayPal SDK Only -->
+  <!-- PayPal SDK -->
   <script src="https://www.paypal.com/sdk/js?client-id=AT8dJ7A5UmgRwQ-V30IF5F_Zs49X9_2uf8UX68g6q0W8kYmgBD-l4uCD-79XgQOYg99SVzLv9KQ7g9X2&currency=USD"></script>
-  <!-- AdSense Placeholder (Add your code later) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 
 <div id="app">
 
+  <!-- Top Dashboard -->
   <div id="dashboard">
     <div>Coins: <span id="coins">50</span></div>
     <div>Wins: <span id="wins">0</span></div>
     <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
   </div>
 
+  <!-- Ad Space Top -->
+  <div class="ad-container">
+    <div class="ad-placeholder">
+      <p>📱 Ad Space 1 - Top Banner</p>
+      <small>AdSense will display here</small>
+    </div>
+  </div>
+
+  <!-- Category Selection Screen -->
   <div id="categoryScreen">
     <h2>🔥 Word Thermometer</h2>
-    <p style="text-align: center; opacity: 0.8; margin-bottom: 20px;">Guess the word based on temperature clues!</p>
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 20px;">Guess words using temperature clues!</p>
     
     <h3>Select Category</h3>
     <button onclick="selectCategory('Food')">🍕 Food</button>
@@ -31,7 +39,15 @@
     <button onclick="selectCategory('Music')">🎵 Music</button>
     <button onclick="selectCategory('Sports')">⚽ Sports</button>
     
-    <div style="margin-top: 30px;">
+    <!-- Ad Space Middle -->
+    <div class="ad-container" style="margin: 20px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 2 - Category Screen</p>
+        <small>AdSense will display here</small>
+      </div>
+    </div>
+    
+    <div style="margin-top: 10px;">
       <button onclick="toggleMonetization()" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
         💰 Store & Support
       </button>
@@ -41,15 +57,27 @@
     </div>
   </div>
 
+  <!-- Difficulty Selection Screen -->
   <div id="difficultyScreen" class="hidden">
     <h2>Select Difficulty</h2>
     <button onclick="selectDifficulty('Beginner')">🥶 Beginner (5-6 letters)</button>
     <button onclick="selectDifficulty('Novice')">😅 Novice (7-8 letters)</button>
     <button onclick="selectDifficulty('Expert')">🔥 Expert (9+ letters)</button>
-    <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 20px;">← Back to Categories</button>
+    
+    <!-- Ad Space -->
+    <div class="ad-container" style="margin: 20px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 3 - Difficulty Screen</p>
+        <small>Ad plays when selecting difficulty</small>
+      </div>
+    </div>
+    
+    <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 10px;">← Back to Categories</button>
   </div>
 
+  <!-- Game Screen -->
   <div id="gameScreen" class="hidden">
+    <!-- Game Header -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
       <button onclick="goBackToCategories()" style="width: auto; padding: 8px 16px; background: #6b7280;">← Back</button>
       <div style="text-align: center;">
@@ -58,11 +86,21 @@
       </div>
     </div>
 
+    <!-- Ad Space in Game (Top) -->
+    <div class="ad-container" style="margin-bottom: 15px;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 4 - Game Top</p>
+        <small>Ad generates revenue while playing</small>
+      </div>
+    </div>
+
+    <!-- Game Info -->
     <div id="infoBar">
       <div>Word Length: <span id="wordLength"></span></div>
       <div>Tries Left: <span id="tries">8</span></div>
     </div>
 
+    <!-- Thermometer -->
     <div id="thermometerWrap">
       <div id="thermometer">
         <div id="thermoFill"></div>
@@ -74,8 +112,10 @@
       </div>
     </div>
 
+    <!-- Emoji Feedback -->
     <div id="emojiFlash"></div>
 
+    <!-- Hint Section -->
     <div id="hintBar">
       <div>Hints Left: <span id="hintsLeft"></span></div>
       <button onclick="useHint()">Get Hint (20 coins)</button>
@@ -83,17 +123,36 @@
 
     <div id="hintDisplay"></div>
     
+    <!-- Ad Space in Game (Middle) -->
+    <div class="ad-container" style="margin: 15px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 5 - Game Middle</p>
+        <small>Another ad spot for more revenue</small>
+      </div>
+    </div>
+    
+    <!-- Last Guesses -->
     <div id="lastGuesses">
       <h3>Last Guesses</h3>
       <ul id="guessList"></ul>
     </div>
 
+    <!-- Guess Input -->
     <div id="guessArea">
       <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
       <button onclick="submitGuess()">Submit Guess</button>
     </div>
+    
+    <!-- Ad Space in Game (Bottom) -->
+    <div class="ad-container" style="margin-top: 20px;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 6 - Game Bottom</p>
+        <small>Final ad spot on game screen</small>
+      </div>
+    </div>
   </div>
 
+  <!-- Win Screen Overlay -->
   <div id="winOverlay" class="hidden">
     <div id="winCard">
       <h2>🎉 You Win! 🔥</h2>
@@ -115,32 +174,60 @@
       <p><strong>🪙 Coins:</strong> Start with 50, +10 for winning</p>
       <p><strong>💰 Store:</strong> Buy hints, remove ads, golden skin!</p>
     </div>
+    
+    <!-- Ad Space in Instructions -->
+    <div class="ad-container" style="margin: 20px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Ad Space 7 - Instructions</p>
+        <small>AdSense will display here</small>
+      </div>
+    </div>
+    
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
-  <!-- Monetization Section -->
+  <!-- Store & Support Screen -->
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
     
-    <!-- AdSense Placeholder -->
-    <div id="adsSection" class="ad-section">
+    <!-- Ad Space in Store -->
+    <div class="ad-container" style="margin-bottom: 20px;">
       <div class="ad-placeholder">
-        <p>📱 Ad will appear here after approval</p>
-        <small>AdSense: ca-pub-YOUR_AD_CLIENT_ID</small>
+        <p>📱 Ad Space 8 - Store</p>
+        <small>Ad before purchases</small>
       </div>
-      
-      <button onclick="watchAdForCoins()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
-        📺 Watch Ad for 10 Coins
-      </button>
     </div>
     
     <div class="purchase-options">
       <h3>✨ Premium Features</h3>
       
-      <div id="paypal-gold-thermometer" class="paypal-button"></div>
-      <div id="paypal-remove-ads" class="paypal-button"></div>
-      <div id="paypal-hint-pack" class="paypal-button"></div>
-      <div id="paypal-coffee" class="paypal-button"></div>
+      <!-- Gold Thermometer -->
+      <div class="purchase-item">
+        <h4>🥇 Gold Thermometer - $1.99</h4>
+        <p>Make your thermometer shine with gold colors!</p>
+        <div id="paypal-gold-thermometer" class="paypal-button"></div>
+      </div>
+      
+      <!-- Remove Ads -->
+      <div class="purchase-item">
+        <h4>✨ Remove All Ads - $4.99</h4>
+        <p>Play without interruptions. One-time purchase.</p>
+        <div id="paypal-remove-ads" class="paypal-button"></div>
+      </div>
+      
+      <!-- Hint Pack -->
+      <div class="purchase-item">
+        <h4>💡 Hint Pack (3 Hints) - $0.99</h4>
+        <p>Get 3 extra hints for tough words!</p>
+        <div id="paypal-hint-pack" class="paypal-button"></div>
+      </div>
+      
+      <!-- Donation -->
+      <div class="purchase-item">
+        <h4>☕ Buy Developer Coffee - Any Amount</h4>
+        <p>Support the developer. Every bit helps!</p>
+        <div id="paypal-coffee" class="paypal-button"></div>
+      </div>
       
       <button onclick="closeMonetization()" style="background: #6b7280; margin-top: 20px;">
         ← Back to Game
@@ -150,55 +237,86 @@
 
 </div>
 
+<!-- Game JavaScript -->
 <script src="game.js"></script>
+
+<!-- PayPal Buttons Setup -->
 <script>
-  // Render PayPal buttons
+  // This code loads the PayPal buttons
   document.addEventListener('DOMContentLoaded', function() {
-    if (window.paypal) {
-      // Gold Thermometer - $1.99
-      paypal.HostedButtons({
-        hostedButtonId: "H9WB3TEW5VQFG",
-        onApprove: function(data, actions) {
-          localStorage.setItem("goldThermometer", "true");
-          alert("🎉 Gold Thermometer purchased! The thermometer will turn gold in your next game.");
-          closeMonetization();
+    // Wait a bit to make sure PayPal is loaded
+    setTimeout(function() {
+      if (window.paypal) {
+        console.log("✅ PayPal loaded, creating buttons...");
+        
+        // Gold Thermometer Button
+        try {
+          paypal.HostedButtons({
+            hostedButtonId: "H9WB3TEW5VQFG",
+            onApprove: function(data, actions) {
+              localStorage.setItem("goldThermometer", "true");
+              alert("🎉 Gold Thermometer purchased! Refresh to see gold colors.");
+              closeMonetization();
+            }
+          }).render("#paypal-gold-thermometer");
+        } catch (e) {
+          console.error("Gold Thermometer button error:", e);
         }
-      }).render("#paypal-gold-thermometer");
-      
-      // Remove Ads - $4.99
-      paypal.HostedButtons({
-        hostedButtonId: "3ZTECSYKCCYN8",
-        onApprove: function(data, actions) {
-          localStorage.setItem("adFree", "true");
-          alert("✨ Thank you! All ads have been removed from your game.");
-          closeMonetization();
+        
+        // Remove Ads Button
+        try {
+          paypal.HostedButtons({
+            hostedButtonId: "3ZTECSYKCCYN8",
+            onApprove: function(data, actions) {
+              localStorage.setItem("adFree", "true");
+              alert("✨ Thank you! All ads removed from your game.");
+              closeMonetization();
+            }
+          }).render("#paypal-remove-ads");
+        } catch (e) {
+          console.error("Remove Ads button error:", e);
         }
-      }).render("#paypal-remove-ads");
-      
-      // Hint Pack - $0.99
-      paypal.HostedButtons({
-        hostedButtonId: "7S553NMVCR4H4",
-        onApprove: function(data, actions) {
-          let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
-          boughtHints += 3;
-          localStorage.setItem("boughtHints", boughtHints);
-          alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints available.`);
-          closeMonetization();
+        
+        // Hint Pack Button
+        try {
+          paypal.HostedButtons({
+            hostedButtonId: "7S553NMVCR4H4",
+            onApprove: function(data, actions) {
+              let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
+              boughtHints += 3;
+              localStorage.setItem("boughtHints", boughtHints);
+              alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints.`);
+              closeMonetization();
+            }
+          }).render("#paypal-hint-pack");
+        } catch (e) {
+          console.error("Hint Pack button error:", e);
         }
-      }).render("#paypal-hint-pack");
-      
-      // Developer Coffee - Any Amount
-      paypal.HostedButtons({
-        hostedButtonId: "3VKBM98YVCLFG",
-        onApprove: function(data, actions) {
-          alert("☕ Thank you for your support! You just bought me a coffee!");
-          closeMonetization();
+        
+        // Coffee Donation Button
+        try {
+          paypal.HostedButtons({
+            hostedButtonId: "3VKBM98YVCLFG",
+            onApprove: function(data, actions) {
+              alert("☕ Thank you for your support! You just bought me a coffee!");
+              closeMonetization();
+            }
+          }).render("#paypal-coffee");
+        } catch (e) {
+          console.error("Coffee button error:", e);
         }
-      }).render("#paypal-coffee");
-    } else {
-      console.log("PayPal SDK not loaded");
-    }
+        
+        console.log("✅ All PayPal buttons created!");
+      } else {
+        console.error("❌ PayPal not loaded");
+        // Show message if PayPal fails
+        document.querySelectorAll('.paypal-button').forEach(function(btn) {
+          btn.innerHTML = '<button style="background: #6b7280; padding: 10px;">PayPal Loading...</button>';
+        });
+      }
+    }, 1000); // Wait 1 second for PayPal to load
   });
 </script>
+
 </body>
 </html>
