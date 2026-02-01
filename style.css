@@ -12,6 +12,7 @@ body {
   margin: auto;
 }
 
+/* Dashboard */
 #dashboard {
   display: flex;
   justify-content: space-between;
@@ -23,6 +24,7 @@ body {
   font-weight: 600;
 }
 
+/* Headings */
 h2 {
   text-align: center;
   margin-bottom: 12px;
@@ -35,6 +37,12 @@ h3 {
   color: #3b82f6;
 }
 
+h4 {
+  margin: 0 0 8px 0;
+  color: #f97316;
+}
+
+/* Buttons */
 button {
   width: 100%;
   padding: 14px;
@@ -46,22 +54,13 @@ button {
   color: white;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s;
-}
-
-button:hover {
-  transform: translateY(-2px);
 }
 
 button:active {
   transform: scale(0.98);
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Input */
 input {
   width: calc(100% - 30px);
   padding: 14px;
@@ -76,13 +75,14 @@ input {
 input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
+/* Hidden class for showing/hiding screens */
 .hidden {
   display: none !important;
 }
 
+/* Game Info Bar */
 #infoBar {
   display: flex;
   justify-content: space-between;
@@ -91,9 +91,9 @@ input:focus {
   border-radius: 10px;
   margin-bottom: 12px;
   font-size: 14px;
-  border: 1px solid #302b63;
 }
 
+/* Thermometer */
 #thermometer {
   width: 100%;
   height: 30px;
@@ -121,6 +121,7 @@ input:focus {
   font-weight: bold;
 }
 
+/* Emoji Feedback */
 #emojiFlash {
   text-align: center;
   font-size: 44px;
@@ -136,6 +137,7 @@ input:focus {
   transform: scale(1.3);
 }
 
+/* Hint Bar */
 #hintBar {
   display: flex;
   justify-content: space-between;
@@ -145,7 +147,6 @@ input:focus {
   border-radius: 10px;
   margin: 12px 0;
   font-size: 14px;
-  border: 1px solid #302b63;
 }
 
 #hintBar button {
@@ -155,6 +156,7 @@ input:focus {
   font-size: 14px;
 }
 
+/* Hint Display */
 #hintDisplay {
   text-align: center;
   font-size: 28px;
@@ -169,12 +171,12 @@ input:focus {
   border: 2px dashed #3b82f6;
 }
 
+/* Last Guesses */
 #lastGuesses {
   background: #0f1236;
   padding: 12px;
   border-radius: 12px;
   margin: 12px 0;
-  border: 1px solid #302b63;
 }
 
 #lastGuesses h3 {
@@ -201,6 +203,7 @@ input:focus {
   border-bottom: none;
 }
 
+/* Guess Area */
 #guessArea {
   margin-top: 20px;
 }
@@ -210,10 +213,13 @@ input:focus {
   background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
-/* Win Overlay */
+/* Win Screen */
 #winOverlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
@@ -229,13 +235,11 @@ input:focus {
   max-width: 320px;
   text-align: center;
   border: 2px solid #f97316;
-  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
 }
 
 #winCard h2 {
   margin-top: 0;
   color: #22c55e;
-  font-size: 28px;
 }
 
 #winWord {
@@ -245,54 +249,57 @@ input:focus {
   margin: 16px 0;
   color: #f97316;
   font-family: monospace;
-  text-transform: uppercase;
 }
 
-/* How to Play Screen */
-#howToPlay {
-  background: linear-gradient(135deg, #14184a, #0f1236);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
+/* Ad Styles */
+.ad-container {
+  background: #0c0f2e;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 15px 0;
   border: 2px solid #3b82f6;
 }
 
-/* Monetization Section */
-#monetization {
-  background: linear-gradient(135deg, #14184a, #0f1236);
-  padding: 20px;
-  border-radius: 12px;
-  margin-top: 20px;
-  border: 2px solid #f97316;
-}
-
-.ad-section {
-  margin-bottom: 30px;
-}
-
 .ad-placeholder {
-  background: #0c0f2e;
-  padding: 40px 20px;
+  padding: 30px 20px;
   text-align: center;
-  border-radius: 8px;
-  margin: 20px 0;
-  border: 2px dashed #3b82f6;
   color: #9ca3af;
+  background: linear-gradient(135deg, #0c0f2e, #14184a);
 }
 
 .ad-placeholder p {
-  font-size: 18px;
-  margin: 0 0 10px 0;
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  color: #60a5fa;
 }
 
+.ad-placeholder small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Purchase Items */
 .purchase-options {
   background: rgba(255, 255, 255, 0.05);
   padding: 20px;
   border-radius: 12px;
 }
 
+.purchase-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+}
+
+.purchase-item p {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
 .paypal-button {
-  margin: 10px 0;
+  margin: 0;
   min-height: 50px;
   border-radius: 10px;
   overflow: hidden;
@@ -323,7 +330,7 @@ input:focus {
   }
 }
 
-/* Responsive Design */
+/* Mobile Responsive */
 @media (max-width: 480px) {
   #app {
     padding: 12px;
@@ -338,13 +345,7 @@ input:focus {
     letter-spacing: 6px;
   }
   
-  #thermometer {
-    height: 25px;
+  .ad-placeholder {
+    padding: 20px 15px;
   }
 }
-
-/* Temperature Colors for Guess List */
-.cold-guess { color: #3b82f6; }
-.cool-guess { color: #22c55e; }
-.warm-guess { color: #f97316; }
-.hot-guess { color: #ef4444; }
