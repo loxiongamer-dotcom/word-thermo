@@ -215,3 +215,7 @@ input {
   letter-spacing: 2px;
   margin: 12px 0 20px;
 }
+
+.hidden {
+display: none;
+}
