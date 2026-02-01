@@ -1,90 +1,510 @@
-let gameActive = false
-let category = ""
-let difficulty = ""
-let solution = ""
-let tries = 8
-let guesses = []
-let coins = 50
-let wins = 0
+// Game Configuration
+let gameActive = false;
+let category = "";
+let difficulty = "";
+let solution = "";
+let tries = 8;
+let guesses = [];
+let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 50;
+let wins = parseInt(localStorage.getItem("wordThermometerWins")) || 0;
+let hintsLeft = 0;
+let maxHints = 0;
+let freeHintsUsed = 0;
+let boughtHintsAvailable = parseInt(localStorage.getItem("boughtHints")) || 0;
+let adFree = localStorage.getItem("adFree") === "true" || false;
+let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
+// COMPLETE WORD DATABASE - 360+ WORDS
 const words = {
   Food: {
-    Beginner: ["apple", "bread", "cheese", "onion", "pizza"],
-    Novice: ["lasagna", "avocado", "pancakes"],
-    Expert: ["pomegranate", "artichokes"]
+    Beginner: ["apple", "bread", "cheese", "pizza", "pasta", "salad", "steak", "sushi", "curry", "soup", "rice", "chips", "fruit", "candy", "mango", "grape", "melon", "lemon", "olive", "onion"],
+    Novice: ["lasagna", "avocado", "pancake", "burger", "taco", "sausage", "pepper", "pickle", "cookie", "brownie", "pudding", "yogurt", "toffee", "banana", "papaya", "cherry", "kiwi", "tomato", "garlic", "ginger"],
+    Expert: ["pomegranate", "artichoke", "spaghetti", "cauliflower", "strawberry", "blueberry", "raspberry", "pineapple", "watermelon", "cantaloupe", "asparagus", "broccoli", "zucchini", "cucumber", "eggplant", "cinnamon", "vanilla", "chocolate", "caramel", "macaroni"]
+  },
+  Animals: {
+    Beginner: ["cat", "dog", "bird", "fish", "frog", "lion", "bear", "wolf", "deer", "duck", "goat", "cow", "pig", "fox", "bat", "rat", "bee", "ant", "owl", "emu"],
+    Novice: ["turtle", "rabbit", "monkey", "panda", "eagle", "shark", "whale", "snake", "zebra", "horse", "sheep", "goose", "moose", "otter", "lemur", "hyena", "koala", "llama", "rhino", "sloth"],
+    Expert: ["elephant", "kangaroo", "crocodile", "alligator", "dolphin", "porpoise", "platypus", "armadillo", "chameleon", "porcupine", "hedgehog", "orangutan", "chimpanzee", "giraffe", "hippopotamus", "rhinoceros", "octopus", "scorpion", "butterfly", "hummingbird"]
+  },
+  Tech: {
+    Beginner: ["code", "data", "app", "web", "html", "java", "python", "linux", "ios", "wifi", "usb", "cpu", "ram", "ssd", "hdd", "url", "api", "ui", "ux", "ai"],
+    Novice: ["python", "kotlin", "server", "client", "mobile", "laptop", "tablet", "widget", "plugin", "kernel", "binary", "syntax", "github", "docker", "swift", "rust", "go", "php", "ruby", "node"],
+    Expert: ["javascript", "typescript", "algorithm", "framework", "database", "firewall", "blockchain", "cryptography", "virtualization", "containerization", "authentication", "authorization", "microservices", "devops", "kubernetes", "artificial", "machine", "neural", "quantum", "robotics"]
+  },
+  Movies: {
+    Beginner: ["avatar", "titanic", "jaws", "rocky", "alien", "gladiator", "matrix", "inception", "gravity", "casino", "scarface", "psycho", "godzilla", "rambo", "shrek", "frozen", "cars", "toys", "up", "coco"],
+    Novice: ["interstellar", "parasite", "casablanca", "pulp", "goodfellas", "godfather", "shawshank", "prestige", "departed", "django", "social", "network", "finding", "nemo", "inside", "out", "zootopia", "up", "coco", "moana"],
+    Expert: ["inception", "interstellar", "parasite", "casablanca", "godfather", "shawshank", "prestige", "departed", "django", "social", "network", "pulp", "goodfellas", "scarface", "psycho", "gladiator", "matrix", "gravity", "avatar", "titanic"]
+  },
+  Music: {
+    Beginner: ["rock", "jazz", "blues", "funk", "soul", "pop", "rap", "folk", "punk", "emo", "metal", "disco", "reggae", "house", "techno", "trance", "dubstep", "grunge", "swing", "bossa"],
+    Novice: ["classical", "orchestral", "symphony", "concerto", "sonata", "ballad", "melody", "harmony", "rhythm", "tempo", "acoustic", "electric", "digital", "analog", "vinyl", "stream", "playlist", "album", "single", "ep"],
+    Expert: ["symphony", "concerto", "sonata", "ballad", "melody", "harmony", "rhythm", "tempo", "acoustic", "electric", "digital", "analog", "vinyl", "stream", "playlist", "album", "single", "ep", "classical", "orchestral"]
+  },
+  Sports: {
+    Beginner: ["soccer", "tennis", "golf", "rugby", "hockey", "boxing", "skiing", "surfing", "diving", "rowing", "curling", "fencing", "archery", "bowling", "pool", "darts", "chess", "poker", "bridge", "polo"],
+    Novice: ["basketball", "baseball", "football", "volleyball", "badminton", "wrestling", "marathon", "triathlon", "pentathlon", "decathlon", "weightlifting", "bodybuilding", "skateboarding", "snowboarding", "paragliding", "hang", "gliding", "bungee", "jumping", "climbing"],
+    Expert: ["basketball", "baseball", "football", "volleyball", "badminton", "wrestling", "marathon", "triathlon", "pentathlon", "decathlon", "weightlifting", "bodybuilding", "skateboarding", "snowboarding", "paragliding", "hang", "gliding", "bungee", "jumping", "skydiving"]
   }
-}
+};
 
+// Initialize the game when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  updateDashboard();
+  
+  // Apply gold thermometer if purchased
+  if (goldThermometer) {
+    updateThermometer(0);
+  }
+  
+  // Setup Enter key for guess input
+  const guessInput = document.getElementById('guessInput');
+  if (guessInput) {
+    guessInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        submitGuess();
+      }
+    });
+  }
+  
+  console.log("🎮 Word Thermometer v1.0 - Ready to Play!");
+});
+
+// Category Selection
 function selectCategory(cat) {
-  category = cat
-  document.getElementById("categoryScreen").classList.add("hidden")
-  document.getElementById("difficultyScreen").classList.remove("hidden")
+  category = cat;
+  document.getElementById("categoryScreen").classList.add("hidden");
+  document.getElementById("difficultyScreen").classList.remove("hidden");
 }
 
+// Difficulty Selection
 function selectDifficulty(diff) {
-  difficulty = diff
-  startGame()
+  difficulty = diff;
+  document.getElementById("difficultyScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+  
+  // Show current category and difficulty
+  document.getElementById("currentCategory").textContent = category;
+  document.getElementById("currentDifficulty").textContent = difficulty;
+  
+  startGame();
 }
 
+// Start a new game
 function startGame() {
-  gameActive = true
-  tries = 8
-  guesses = []
-
-  document.getElementById("guessList").innerHTML = ""
-  document.getElementById("difficultyScreen").classList.add("hidden")
-  document.getElementById("gameScreen").classList.remove("hidden")
-  document.getElementById("winOverlay").classList.add("hidden")
-
-  const list = words[category][difficulty]
-  solution = list[Math.floor(Math.random() * list.length)].toLowerCase()
-
-  document.getElementById("wordLength").innerText = solution.length
-  document.getElementById("tries").innerText = tries
-
-  updateDashboard()
+  gameActive = true;
+  tries = 8;
+  guesses = [];
+  freeHintsUsed = 0;
+  
+  // Set hints based on difficulty
+  if (difficulty === "Beginner") {
+    hintsLeft = 1;
+    maxHints = 1;
+  } else if (difficulty === "Novice") {
+    hintsLeft = 2;
+    maxHints = 2;
+  } else {
+    hintsLeft = 3;
+    maxHints = 3;
+  }
+  
+  // Add bought hints
+  hintsLeft += boughtHintsAvailable;
+  
+  // Clear UI
+  document.getElementById("guessList").innerHTML = "";
+  document.getElementById("guessInput").value = "";
+  document.getElementById("hintDisplay").textContent = "";
+  document.getElementById("emojiFlash").classList.remove("show");
+  document.getElementById("winOverlay").classList.add("hidden");
+  
+  // Get word list
+  const wordList = words[category][difficulty];
+  
+  // Select random word
+  if (wordList && wordList.length > 0) {
+    solution = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
+    console.log("🎯 Category:", category, "| Difficulty:", difficulty, "| Word:", solution);
+  } else {
+    solution = "example";
+    console.error("❌ No words found for", category, difficulty);
+  }
+  
+  // Update UI
+  document.getElementById("wordLength").textContent = solution.length;
+  document.getElementById("tries").textContent = tries;
+  document.getElementById("hintsLeft").textContent = hintsLeft;
+  
+  // Initialize hint display with underscores
+  document.getElementById("hintDisplay").textContent = "_ ".repeat(solution.length).trim();
+  
+  // Reset thermometer
+  updateThermometer(0);
+  
+  // Focus on input field
+  setTimeout(() => {
+    document.getElementById("guessInput").focus();
+  }, 100);
 }
 
+// Calculate similarity between guess and solution (0-100%)
+function calculateSimilarity(guess, solution) {
+  let score = 0;
+  
+  // 1. Check for exact position matches (40% weight)
+  let exactMatches = 0;
+  const minLength = Math.min(guess.length, solution.length);
+  
+  for (let i = 0; i < minLength; i++) {
+    if (guess[i] === solution[i]) {
+      exactMatches++;
+    }
+  }
+  
+  score += (exactMatches / solution.length) * 40;
+  
+  // 2. Check for common letters (40% weight)
+  const guessLetters = new Set(guess);
+  const solutionLetters = new Set(solution);
+  let commonCount = 0;
+  
+  for (let letter of guessLetters) {
+    if (solutionLetters.has(letter)) {
+      commonCount++;
+    }
+  }
+  
+  score += (commonCount / Math.max(guessLetters.size, solutionLetters.size)) * 40;
+  
+  // 3. Penalty for length difference (20% weight)
+  const lengthDiff = Math.abs(guess.length - solution.length);
+  const maxLengthDiff = Math.max(guess.length, solution.length);
+  score -= (lengthDiff / maxLengthDiff) * 20;
+  
+  // Ensure score is between 0-100
+  score = Math.max(0, Math.min(100, score));
+  
+  return Math.round(score);
+}
+
+// Get emoji based on score
+function getEmojiForScore(score) {
+  if (score < 20) return "🧊";
+  if (score < 40) return "❄️";
+  if (score < 60) return "🌤️";
+  if (score < 80) return "🌶️";
+  return "🔥";
+}
+
+// Get temperature class for guess list
+function getTempClass(score) {
+  if (score < 20) return "cold-guess";
+  if (score < 40) return "cool-guess";
+  if (score < 60) return "warm-guess";
+  return "hot-guess";
+}
+
+// Update thermometer display
+function updateThermometer(percentage) {
+  const thermoFill = document.getElementById("thermoFill");
+  thermoFill.style.width = percentage + "%";
+  
+  if (goldThermometer) {
+    // Gold gradient
+    if (percentage < 33) {
+      thermoFill.style.background = 'linear-gradient(to right, #FFD700, #FFA500)';
+    } else if (percentage < 66) {
+      thermoFill.style.background = 'linear-gradient(to right, #FFA500, #FF8C00)';
+    } else {
+      thermoFill.style.background = 'linear-gradient(to right, #FF8C00, #FF4500)';
+    }
+  } else {
+    // Default gradient
+    if (percentage < 33) {
+      thermoFill.style.background = 'linear-gradient(to right, #3b82f6, #22c55e)';
+    } else if (percentage < 66) {
+      thermoFill.style.background = 'linear-gradient(to right, #22c55e, #f97316)';
+    } else {
+      thermoFill.style.background = 'linear-gradient(to right, #f97316, #ef4444)';
+    }
+  }
+}
+
+// Show emoji animation
+function showEmoji(emoji) {
+  const emojiFlash = document.getElementById("emojiFlash");
+  emojiFlash.textContent = emoji;
+  emojiFlash.classList.add("show");
+  
+  setTimeout(() => {
+    emojiFlash.classList.remove("show");
+  }, 800);
+}
+
+// Submit a guess
 function submitGuess() {
-  if (!gameActive) return
+  if (!gameActive) return;
 
-  const input = document.getElementById("guessInput")
-  const guess = input.value.toLowerCase().trim()
-  if (!guess) return
-  if (guesses.includes(guess)) return
+  const input = document.getElementById("guessInput");
+  const guess = input.value.toLowerCase().trim();
+  
+  // Validation
+  if (!guess) {
+    alert("Please enter a guess!");
+    return;
+  }
+  
+  if (guesses.includes(guess)) {
+    alert("You already guessed that word!");
+    input.value = "";
+    return;
+  }
+  
+  if (guess.length !== solution.length) {
+    alert(`Please enter a word with ${solution.length} letters!`);
+    return;
+  }
 
-  guesses.push(guess)
-  tries--
-  document.getElementById("tries").innerText = tries
+  // Process guess
+  guesses.push(guess);
+  tries--;
+  document.getElementById("tries").textContent = tries;
 
-  input.value = ""
+  // Calculate similarity
+  const similarity = calculateSimilarity(guess, solution);
+  const emoji = getEmojiForScore(similarity);
+  const tempClass = getTempClass(similarity);
+  
+  // Update UI
+  updateThermometer(similarity);
+  showEmoji(emoji);
 
+  // Add to guess history
+  const guessList = document.getElementById("guessList");
+  const li = document.createElement("li");
+  
+  li.innerHTML = `
+    <span>${guess}</span>
+    <span class="${tempClass}" style="font-weight: bold;">
+      ${similarity}% ${emoji}
+    </span>
+  `;
+  
+  guessList.appendChild(li);
+  
+  // Keep only last 3 guesses
+  if (guessList.children.length > 3) {
+    guessList.removeChild(guessList.firstChild);
+  }
+
+  // Clear input
+  input.value = "";
+  
+  // Check for win
   if (guess === solution) {
-    gameActive = false
-    wins++
-    updateDashboard()
-    showWinScreen()
-    return
+    gameActive = false;
+    wins++;
+    coins += 10; // Win reward
+    
+    // Save to localStorage
+    localStorage.setItem("wordThermometerWins", wins);
+    localStorage.setItem("wordThermometerCoins", coins);
+    
+    updateDashboard();
+    showWinScreen();
+    createConfetti();
+    return;
   }
 
+  // Check for game over
   if (tries === 0) {
-    gameActive = false
-    alert("Game over. Word was " + solution)
+    gameActive = false;
+    setTimeout(() => {
+      alert(`Game over! The word was: ${solution}`);
+      playAgain();
+    }, 1000);
+  }
+  
+  // Focus back on input
+  input.focus();
+}
+
+// Use a hint
+function useHint() {
+  if (!gameActive) return;
+  
+  if (hintsLeft <= 0) {
+    if (coins >= 20) {
+      const buyHint = confirm("No free hints left! Buy a hint for 20 coins?");
+      if (buyHint) {
+        coins -= 20;
+        localStorage.setItem("wordThermometerCoins", coins);
+        hintsLeft++;
+        updateDashboard();
+        document.getElementById("hintsLeft").textContent = hintsLeft;
+      } else {
+        return;
+      }
+    } else {
+      alert("Not enough coins! You need 20 coins for a hint.");
+      return;
+    }
+  }
+
+  hintsLeft--;
+  document.getElementById("hintsLeft").textContent = hintsLeft;
+  
+  // Generate hint
+  const hintDisplay = document.getElementById("hintDisplay");
+  let currentHint = hintDisplay.textContent.replace(/ /g, "");
+  
+  if (currentHint.length !== solution.length) {
+    currentHint = "_".repeat(solution.length);
+  }
+  
+  const hintArray = currentHint.split("");
+  const hiddenPositions = [];
+  
+  // Find all hidden positions
+  for (let i = 0; i < hintArray.length; i++) {
+    if (hintArray[i] === "_") {
+      hiddenPositions.push(i);
+    }
+  }
+  
+  // Reveal a random hidden letter
+  if (hiddenPositions.length > 0) {
+    const randomPos = hiddenPositions[Math.floor(Math.random() * hiddenPositions.length)];
+    hintArray[randomPos] = solution[randomPos];
+    
+    // Update display with spaces between letters
+    hintDisplay.textContent = hintArray.join(" ");
   }
 }
 
-function updateDashboard() {
-  document.getElementById("coins").innerText = coins
-  document.getElementById("wins").innerText = wins
-}
-
+// Show win screen
 function showWinScreen() {
-  document.getElementById("winWord").innerText = solution
-  document.getElementById("winOverlay").classList.remove("hidden")
+  document.getElementById("winWord").textContent = solution.toUpperCase();
+  document.getElementById("winOverlay").classList.remove("hidden");
 }
 
+// Play again
 function playAgain() {
-  document.getElementById("winOverlay").classList.add("hidden")
-  document.getElementById("gameScreen").classList.add("hidden")
-  document.getElementById("categoryScreen").classList.remove("hidden")
+  document.getElementById("winOverlay").classList.add("hidden");
+  document.getElementById("gameScreen").classList.add("hidden");
+  document.getElementById("categoryScreen").classList.remove("hidden");
+}
+
+// Go back to categories
+function goBackToCategories() {
+  document.getElementById("gameScreen").classList.add("hidden");
+  document.getElementById("difficultyScreen").classList.add("hidden");
+  document.getElementById("categoryScreen").classList.remove("hidden");
+  document.getElementById("monetization").classList.add("hidden");
+  document.getElementById("howToPlay").classList.add("hidden");
+}
+
+// Toggle How to Play screen
+function toggleHowToPlay() {
+  const howToPlay = document.getElementById("howToPlay");
+  const categoryScreen = document.getElementById("categoryScreen");
+  
+  if (howToPlay.classList.contains("hidden")) {
+    howToPlay.classList.remove("hidden");
+    categoryScreen.classList.add("hidden");
+  } else {
+    howToPlay.classList.add("hidden");
+    categoryScreen.classList.remove("hidden");
+  }
+}
+
+// Update dashboard
+function updateDashboard() {
+  document.getElementById("coins").textContent = coins;
+  document.getElementById("wins").textContent = wins;
+}
+
+// Reset progress
+function resetProgress() {
+  if (confirm("Reset all progress? You'll lose coins, wins, and purchases.")) {
+    localStorage.removeItem("wordThermometerCoins");
+    localStorage.removeItem("wordThermometerWins");
+    localStorage.removeItem("boughtHints");
+    localStorage.removeItem("adFree");
+    localStorage.removeItem("goldThermometer");
+    
+    coins = 50;
+    wins = 0;
+    boughtHintsAvailable = 0;
+    adFree = false;
+    goldThermometer = false;
+    
+    updateDashboard();
+    alert("Progress reset! Starting fresh with 50 coins.");
+  }
+}
+
+// Watch ad for coins (simulated for now)
+function watchAdForCoins() {
+  if (adFree) {
+    alert("🎉 You've purchased ad-free version! No ads for you.");
+    return;
+  }
+  
+  // Simulate ad watching
+  coins += 10;
+  localStorage.setItem("wordThermometerCoins", coins);
+  updateDashboard();
+  
+  // In production, this would integrate with AdSense reward ads
+  alert("+10 coins! Thanks for watching! 🎬");
+}
+
+// Monetization functions
+function toggleMonetization() {
+  const monetization = document.getElementById("monetization");
+  const categoryScreen = document.getElementById("categoryScreen");
+  
+  if (monetization.classList.contains("hidden")) {
+    monetization.classList.remove("hidden");
+    categoryScreen.classList.add("hidden");
+  } else {
+    monetization.classList.add("hidden");
+    categoryScreen.classList.remove("hidden");
+  }
+}
+
+function closeMonetization() {
+  document.getElementById("monetization").classList.add("hidden");
+  document.getElementById("categoryScreen").classList.remove("hidden");
+}
+
+// Confetti effect
+function createConfetti() {
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+  const container = document.body;
+  
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    confetti.style.animationDelay = Math.random() * 1 + 's';
+    
+    container.appendChild(confetti);
+    
+    setTimeout(() => {
+      if (confetti.parentNode) {
+        confetti.remove();
+      }
+    }, 5000);
+  }
+}
+
+// For testing only (remove in production)
+function cheat() {
+  console.log("🎯 Solution:", solution);
+  alert(`Cheat: The word is "${solution}"`);
 }
