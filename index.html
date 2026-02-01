@@ -4,6 +4,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Word Thermometer</title>
   <link rel="stylesheet" href="style.css">
+  <!-- PayPal SDK Only -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AT8dJ7A5UmgRwQ-V30IF5F_Zs49X9_2uf8UX68g6q0W8kYmgBD-l4uCD-79XgQOYg99SVzLv9KQ7g9X2&currency=USD"></script>
+  <!-- AdSense Placeholder (Add your code later) -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_CLIENT_ID" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -12,73 +16,189 @@
   <div id="dashboard">
     <div>Coins: <span id="coins">50</span></div>
     <div>Wins: <span id="wins">0</span></div>
+    <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
   </div>
 
   <div id="categoryScreen">
-    <h2>Select Category</h2>
-    <button onclick="selectCategory('Food')">Food</button>
-    <button onclick="selectCategory('Animals')">Animals</button>
-    <button onclick="selectCategory('Tech')">Tech</button>
-    <button onclick="selectCategory('Movies')">Movies</button>
-    <button onclick="selectCategory('Music')">Music</button>
-    <button onclick="selectCategory('Sports')">Sports</button>
+    <h2>🔥 Word Thermometer</h2>
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 20px;">Guess the word based on temperature clues!</p>
+    
+    <h3>Select Category</h3>
+    <button onclick="selectCategory('Food')">🍕 Food</button>
+    <button onclick="selectCategory('Animals')">🐾 Animals</button>
+    <button onclick="selectCategory('Tech')">💻 Tech</button>
+    <button onclick="selectCategory('Movies')">🎬 Movies</button>
+    <button onclick="selectCategory('Music')">🎵 Music</button>
+    <button onclick="selectCategory('Sports')">⚽ Sports</button>
+    
+    <div style="margin-top: 30px;">
+      <button onclick="toggleMonetization()" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
+        💰 Store & Support
+      </button>
+      <button onclick="toggleHowToPlay()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); margin-top: 10px;">
+        ❓ How to Play
+      </button>
+    </div>
   </div>
 
   <div id="difficultyScreen" class="hidden">
     <h2>Select Difficulty</h2>
-    <button onclick="selectDifficulty('Beginner')">Beginner</button>
-    <button onclick="selectDifficulty('Novice')">Novice</button>
-    <button onclick="selectDifficulty('Expert')">Expert</button>
+    <button onclick="selectDifficulty('Beginner')">🥶 Beginner (5-6 letters)</button>
+    <button onclick="selectDifficulty('Novice')">😅 Novice (7-8 letters)</button>
+    <button onclick="selectDifficulty('Expert')">🔥 Expert (9+ letters)</button>
+    <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 20px;">← Back to Categories</button>
   </div>
 
   <div id="gameScreen" class="hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <button onclick="goBackToCategories()" style="width: auto; padding: 8px 16px; background: #6b7280;">← Back</button>
+      <div style="text-align: center;">
+        <div style="font-size: 14px; opacity: 0.8;">Category: <strong id="currentCategory"></strong></div>
+        <div style="font-size: 14px; opacity: 0.8;">Difficulty: <strong id="currentDifficulty"></strong></div>
+      </div>
+    </div>
 
-  <div id="infoBar">
-    <div>Word Length: <span id="wordLength"></span></div>
-    <div>Tries Left: <span id="tries">8</span></div>
-  </div>
+    <div id="infoBar">
+      <div>Word Length: <span id="wordLength"></span></div>
+      <div>Tries Left: <span id="tries">8</span></div>
+    </div>
 
-  <div id="thermometerWrap">
-  <div id="thermometer">
-    <div id="thermoFill"></div>
-  </div>
-  <div id="thermoScale">
-    <span>Cold</span>
-    <span>Warm</span>
-    <span>Hot</span>
-  </div>
-</div>
+    <div id="thermometerWrap">
+      <div id="thermometer">
+        <div id="thermoFill"></div>
+      </div>
+      <div id="thermoScale">
+        <span>🧊 Cold</span>
+        <span>🌤️ Warm</span>
+        <span>🔥 Hot</span>
+      </div>
+    </div>
 
-  <div id="emojiFlash"></div>
+    <div id="emojiFlash"></div>
 
     <div id="hintBar">
-  <div>Hints Left: <span id="hintsLeft"></span></div>
-  <button onclick="useHint()">Get Hint</button>
-</div>
+      <div>Hints Left: <span id="hintsLeft"></span></div>
+      <button onclick="useHint()">Get Hint (20 coins)</button>
+    </div>
 
-<div id="hintDisplay"></div>
+    <div id="hintDisplay"></div>
     
     <div id="lastGuesses">
-    <h3>Last Guesses</h3>
-    <ul id="guessList"></ul>
+      <h3>Last Guesses</h3>
+      <ul id="guessList"></ul>
+    </div>
+
+    <div id="guessArea">
+      <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
+      <button onclick="submitGuess()">Submit Guess</button>
+    </div>
   </div>
 
-  <div id="guessArea">
-    <input id="guessInput" type="text" placeholder="Type your guess">
-    <button onclick="submitGuess()">Submit Guess</button>
+  <div id="winOverlay" class="hidden">
+    <div id="winCard">
+      <h2>🎉 You Win! 🔥</h2>
+      <p>The word was:</p>
+      <div id="winWord"></div>
+      <p>+10 Coins! 🪙</p>
+      <button onclick="playAgain()" style="background: linear-gradient(135deg, #22c55e, #16a34a);">Play Again</button>
+    </div>
+  </div>
+
+  <!-- How to Play Screen -->
+  <div id="howToPlay" class="hidden">
+    <h2>❓ How to Play</h2>
+    <div style="background: #0f1236; padding: 15px; border-radius: 10px; margin: 15px 0;">
+      <p><strong>🎯 Goal:</strong> Guess the hidden word!</p>
+      <p><strong>🌡️ Thermometer:</strong> Shows how close your guess is</p>
+      <p><strong>🧊→🔥:</strong> Cold (far) to Hot (close)</p>
+      <p><strong>💡 Hints:</strong> Beginner: 1 free, Novice: 2, Expert: 3</p>
+      <p><strong>🪙 Coins:</strong> Start with 50, +10 for winning</p>
+      <p><strong>💰 Store:</strong> Buy hints, remove ads, golden skin!</p>
+    </div>
+    <button onclick="toggleHowToPlay()">← Back to Game</button>
+  </div>
+
+  <!-- Monetization Section -->
+  <div id="monetization" class="hidden">
+    <h2>💰 Store & Support</h2>
+    
+    <!-- AdSense Placeholder -->
+    <div id="adsSection" class="ad-section">
+      <div class="ad-placeholder">
+        <p>📱 Ad will appear here after approval</p>
+        <small>AdSense: ca-pub-YOUR_AD_CLIENT_ID</small>
+      </div>
+      
+      <button onclick="watchAdForCoins()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+        📺 Watch Ad for 10 Coins
+      </button>
+    </div>
+    
+    <div class="purchase-options">
+      <h3>✨ Premium Features</h3>
+      
+      <div id="paypal-gold-thermometer" class="paypal-button"></div>
+      <div id="paypal-remove-ads" class="paypal-button"></div>
+      <div id="paypal-hint-pack" class="paypal-button"></div>
+      <div id="paypal-coffee" class="paypal-button"></div>
+      
+      <button onclick="closeMonetization()" style="background: #6b7280; margin-top: 20px;">
+        ← Back to Game
+      </button>
+    </div>
   </div>
 
 </div>
 
-  <div id="winOverlay" class="hidden" style="display:none;">
-  <div id="winCard">
-    <h2>You Win 🔥</h2>
-    <p>The word was:</p>
-    <div id="winWord"></div>
-    <button onclick="playAgain()">Play Again</button>
-  </div>
-</div>
-  
-  <script src="game.js"></script>
+<script src="game.js"></script>
+<script>
+  // Render PayPal buttons
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.paypal) {
+      // Gold Thermometer - $1.99
+      paypal.HostedButtons({
+        hostedButtonId: "H9WB3TEW5VQFG",
+        onApprove: function(data, actions) {
+          localStorage.setItem("goldThermometer", "true");
+          alert("🎉 Gold Thermometer purchased! The thermometer will turn gold in your next game.");
+          closeMonetization();
+        }
+      }).render("#paypal-gold-thermometer");
+      
+      // Remove Ads - $4.99
+      paypal.HostedButtons({
+        hostedButtonId: "3ZTECSYKCCYN8",
+        onApprove: function(data, actions) {
+          localStorage.setItem("adFree", "true");
+          alert("✨ Thank you! All ads have been removed from your game.");
+          closeMonetization();
+        }
+      }).render("#paypal-remove-ads");
+      
+      // Hint Pack - $0.99
+      paypal.HostedButtons({
+        hostedButtonId: "7S553NMVCR4H4",
+        onApprove: function(data, actions) {
+          let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
+          boughtHints += 3;
+          localStorage.setItem("boughtHints", boughtHints);
+          alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints available.`);
+          closeMonetization();
+        }
+      }).render("#paypal-hint-pack");
+      
+      // Developer Coffee - Any Amount
+      paypal.HostedButtons({
+        hostedButtonId: "3VKBM98YVCLFG",
+        onApprove: function(data, actions) {
+          alert("☕ Thank you for your support! You just bought me a coffee!");
+          closeMonetization();
+        }
+      }).render("#paypal-coffee");
+    } else {
+      console.log("PayPal SDK not loaded");
+    }
+  });
+</script>
 </body>
 </html>
