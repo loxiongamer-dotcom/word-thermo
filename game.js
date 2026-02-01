@@ -1,7 +1,6 @@
 let gameActive = false
 let hintsLeft = 0
 let revealedIndexes = []
-
 let category = ""
 let difficulty = ""
 let solution = ""
@@ -10,10 +9,13 @@ let guesses = []
 let coins = 50
 let wins = 0
 
-document.addEventListener(“DOMContentLoaded”, () => {
-document.getElementById(“winOverlay”).classList.add(“hidden”)
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("winOverlay").classList.add("hidden")
+  document.getElementById("gameScreen").classList.add("hidden")
+  document.getElementById("difficultyScreen").classList.add("hidden")
+  document.getElementById("categoryScreen").classList.remove("hidden")
 })
-  
+
 const words = {
   Food: {
     Beginner: ["apple", "bread", "cheese", "onion", "pizza"],
@@ -40,6 +42,8 @@ function startGame() {
   revealedIndexes = []
 
   document.getElementById("guessList").innerHTML = ""
+  document.getElementById("tries").innerText = tries
+
   document.getElementById("difficultyScreen").classList.add("hidden")
   document.getElementById("gameScreen").classList.remove("hidden")
 
@@ -47,7 +51,6 @@ function startGame() {
   solution = list[Math.floor(Math.random() * list.length)].toLowerCase()
 
   document.getElementById("wordLength").innerText = solution.length
-  document.getElementById("tries").innerText = tries
 
   if (difficulty === "Beginner") hintsLeft = 1
   if (difficulty === "Novice") hintsLeft = 2
@@ -56,7 +59,6 @@ function startGame() {
   updateDashboard()
   updateHints()
   renderHintDisplay()
-  updateThermometer(0)
 }
 
 function submitGuess() {
@@ -79,13 +81,11 @@ function submitGuess() {
   input.value = ""
 
   if (guess === solution) {
-    updateThermometer(100)
-    flashWinEmoji()
+    gameActive = false
     wins++
     updateDashboard()
     launchConfetti()
     showWinScreen()
-    gameActive = false
     return
   }
 
@@ -99,9 +99,9 @@ function calculateHeat(guess) {
   let matches = 0
   for (let i = 0; i < guess.length; i++) {
     if (solution.includes(guess[i])) matches++
-    if (solution[i] === guess[i]) matches += 2
+    if (solution[i] === guess[i]) matches++
   }
-  return Math.min(100, Math.floor((matches / solution.length) * 20))
+  return Math.min(100, Math.floor((matches / solution.length) * 25))
 }
 
 function updateThermometer(value) {
@@ -115,7 +115,6 @@ function flashEmoji(value) {
   if (value > 40) emoji = "☀️"
   if (value > 60) emoji = "🌶️"
   if (value > 80) emoji = "🔥"
-
   el.innerText = emoji
   el.classList.add("show")
   setTimeout(() => el.classList.remove("show"), 500)
@@ -137,7 +136,6 @@ function updateDashboard() {
 }
 
 function useHint() {
-  if (!gameActive) return
   if (hintsLeft === 0 && coins < 20) return
 
   if (hintsLeft === 0) coins -= 20
@@ -166,24 +164,16 @@ function renderHintDisplay() {
   document.getElementById("hintDisplay").innerText = display
 }
 
-function flashWinEmoji() {
-  const el = document.getElementById("emojiFlash")
-  el.innerText = "🔥"
-  el.classList.add("show")
-  setTimeout(() => el.classList.remove("show"), 700)
-}
-
 function launchConfetti() {
   const colors = ["#ff4d4d", "#ffd93d", "#4dff88", "#4dd2ff", "#b84dff"]
-
   for (let i = 0; i < 120; i++) {
-    const c = document.createElement("div")
-    c.className = "confetti"
-    c.style.left = Math.random() * 100 + "vw"
-    c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
-    c.style.animationDuration = 2 + Math.random() * 2 + "s"
-    document.body.appendChild(c)
-    setTimeout(() => c.remove(), 4000)
+    const confetti = document.createElement("div")
+    confetti.className = "confetti"
+    confetti.style.left = Math.random() * 100 + "vw"
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+    confetti.style.animationDuration = 2 + Math.random() * 2 + "s"
+    document.body.appendChild(confetti)
+    setTimeout(() => confetti.remove(), 4000)
   }
 }
 
@@ -194,20 +184,7 @@ function showWinScreen() {
 
 function playAgain() {
   document.getElementById("winOverlay").classList.add("hidden")
-  resetGame()
-}
-
-function resetGame() {
-gameActive = false
-
-category = “”
-difficulty = “”
-solution = “”
-
-guesses = []
-revealedIndexes = []
-
-document.getElementById(“gameScreen”).classList.add(“hidden”)
-document.getElementById(“difficultyScreen”).classList.add(“hidden”)
-document.getElementById(“categoryScreen”).classList.remove(“hidden”)
+  document.getElementById("gameScreen").classList.add("hidden")
+  document.getElementById("categoryScreen").classList.remove("hidden")
+  gameActive = false
 }
