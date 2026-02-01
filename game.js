@@ -1,4 +1,6 @@
-// Game Configuration
+// ============================
+// GAME CONFIGURATION
+// ============================
 let gameActive = false;
 let category = "";
 let difficulty = "";
@@ -14,7 +16,9 @@ let boughtHintsAvailable = parseInt(localStorage.getItem("boughtHints")) || 0;
 let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
-// COMPLETE WORD DATABASE - 360+ WORDS
+// ============================
+// WORD DATABASE (360+ WORDS)
+// ============================
 const words = {
   Food: {
     Beginner: ["apple", "bread", "cheese", "pizza", "pasta", "salad", "steak", "sushi", "curry", "soup", "rice", "chips", "fruit", "candy", "mango", "grape", "melon", "lemon", "olive", "onion"],
@@ -48,7 +52,9 @@ const words = {
   }
 };
 
-// Initialize the game when page loads
+// ============================
+// GAME INITIALIZATION
+// ============================
 document.addEventListener('DOMContentLoaded', function() {
   updateDashboard();
   
@@ -67,30 +73,42 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  console.log("🎮 Word Thermometer v1.0 - Ready to Play!");
+  console.log("🔥 Word Thermometer v1.0 - Ready!");
 });
 
-// Category Selection
+// ============================
+// CATEGORY & DIFFICULTY
+// ============================
 function selectCategory(cat) {
   category = cat;
   document.getElementById("categoryScreen").classList.add("hidden");
   document.getElementById("difficultyScreen").classList.remove("hidden");
 }
 
-// Difficulty Selection
 function selectDifficulty(diff) {
   difficulty = diff;
-  document.getElementById("difficultyScreen").classList.add("hidden");
-  document.getElementById("gameScreen").classList.remove("hidden");
   
-  // Show current category and difficulty
-  document.getElementById("currentCategory").textContent = category;
-  document.getElementById("currentDifficulty").textContent = difficulty;
+  // Show ad when selecting difficulty
+  if (!adFree) {
+    showAd("difficulty");
+  }
   
-  startGame();
+  // Start game after ad
+  setTimeout(function() {
+    document.getElementById("difficultyScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+    
+    // Show current category and difficulty
+    document.getElementById("currentCategory").textContent = category;
+    document.getElementById("currentDifficulty").textContent = difficulty;
+    
+    startGame();
+  }, 1000);
 }
 
-// Start a new game
+// ============================
+// GAME LOGIC
+// ============================
 function startGame() {
   gameActive = true;
   tries = 8;
@@ -125,10 +143,8 @@ function startGame() {
   // Select random word
   if (wordList && wordList.length > 0) {
     solution = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
-    console.log("🎯 Category:", category, "| Difficulty:", difficulty, "| Word:", solution);
   } else {
     solution = "example";
-    console.error("❌ No words found for", category, difficulty);
   }
   
   // Update UI
@@ -143,106 +159,11 @@ function startGame() {
   updateThermometer(0);
   
   // Focus on input field
-  setTimeout(() => {
+  setTimeout(function() {
     document.getElementById("guessInput").focus();
   }, 100);
 }
 
-// Calculate similarity between guess and solution (0-100%)
-function calculateSimilarity(guess, solution) {
-  let score = 0;
-  
-  // 1. Check for exact position matches (40% weight)
-  let exactMatches = 0;
-  const minLength = Math.min(guess.length, solution.length);
-  
-  for (let i = 0; i < minLength; i++) {
-    if (guess[i] === solution[i]) {
-      exactMatches++;
-    }
-  }
-  
-  score += (exactMatches / solution.length) * 40;
-  
-  // 2. Check for common letters (40% weight)
-  const guessLetters = new Set(guess);
-  const solutionLetters = new Set(solution);
-  let commonCount = 0;
-  
-  for (let letter of guessLetters) {
-    if (solutionLetters.has(letter)) {
-      commonCount++;
-    }
-  }
-  
-  score += (commonCount / Math.max(guessLetters.size, solutionLetters.size)) * 40;
-  
-  // 3. Penalty for length difference (20% weight)
-  const lengthDiff = Math.abs(guess.length - solution.length);
-  const maxLengthDiff = Math.max(guess.length, solution.length);
-  score -= (lengthDiff / maxLengthDiff) * 20;
-  
-  // Ensure score is between 0-100
-  score = Math.max(0, Math.min(100, score));
-  
-  return Math.round(score);
-}
-
-// Get emoji based on score
-function getEmojiForScore(score) {
-  if (score < 20) return "🧊";
-  if (score < 40) return "❄️";
-  if (score < 60) return "🌤️";
-  if (score < 80) return "🌶️";
-  return "🔥";
-}
-
-// Get temperature class for guess list
-function getTempClass(score) {
-  if (score < 20) return "cold-guess";
-  if (score < 40) return "cool-guess";
-  if (score < 60) return "warm-guess";
-  return "hot-guess";
-}
-
-// Update thermometer display
-function updateThermometer(percentage) {
-  const thermoFill = document.getElementById("thermoFill");
-  thermoFill.style.width = percentage + "%";
-  
-  if (goldThermometer) {
-    // Gold gradient
-    if (percentage < 33) {
-      thermoFill.style.background = 'linear-gradient(to right, #FFD700, #FFA500)';
-    } else if (percentage < 66) {
-      thermoFill.style.background = 'linear-gradient(to right, #FFA500, #FF8C00)';
-    } else {
-      thermoFill.style.background = 'linear-gradient(to right, #FF8C00, #FF4500)';
-    }
-  } else {
-    // Default gradient
-    if (percentage < 33) {
-      thermoFill.style.background = 'linear-gradient(to right, #3b82f6, #22c55e)';
-    } else if (percentage < 66) {
-      thermoFill.style.background = 'linear-gradient(to right, #22c55e, #f97316)';
-    } else {
-      thermoFill.style.background = 'linear-gradient(to right, #f97316, #ef4444)';
-    }
-  }
-}
-
-// Show emoji animation
-function showEmoji(emoji) {
-  const emojiFlash = document.getElementById("emojiFlash");
-  emojiFlash.textContent = emoji;
-  emojiFlash.classList.add("show");
-  
-  setTimeout(() => {
-    emojiFlash.classList.remove("show");
-  }, 800);
-}
-
-// Submit a guess
 function submitGuess() {
   if (!gameActive) return;
 
@@ -274,7 +195,6 @@ function submitGuess() {
   // Calculate similarity
   const similarity = calculateSimilarity(guess, solution);
   const emoji = getEmojiForScore(similarity);
-  const tempClass = getTempClass(similarity);
   
   // Update UI
   updateThermometer(similarity);
@@ -284,9 +204,15 @@ function submitGuess() {
   const guessList = document.getElementById("guessList");
   const li = document.createElement("li");
   
+  // Color based on temperature
+  let tempClass = "cold-guess";
+  if (similarity >= 80) tempClass = "hot-guess";
+  else if (similarity >= 60) tempClass = "warm-guess";
+  else if (similarity >= 40) tempClass = "cool-guess";
+  
   li.innerHTML = `
     <span>${guess}</span>
-    <span class="${tempClass}" style="font-weight: bold;">
+    <span style="color: ${getColorForScore(similarity)}; font-weight: bold;">
       ${similarity}% ${emoji}
     </span>
   `;
@@ -305,7 +231,7 @@ function submitGuess() {
   if (guess === solution) {
     gameActive = false;
     wins++;
-    coins += 10; // Win reward
+    coins += 10;
     
     // Save to localStorage
     localStorage.setItem("wordThermometerWins", wins);
@@ -320,7 +246,7 @@ function submitGuess() {
   // Check for game over
   if (tries === 0) {
     gameActive = false;
-    setTimeout(() => {
+    setTimeout(function() {
       alert(`Game over! The word was: ${solution}`);
       playAgain();
     }, 1000);
@@ -330,32 +256,42 @@ function submitGuess() {
   input.focus();
 }
 
-// Use a hint
+// ============================
+// HINT SYSTEM
+// ============================
 function useHint() {
   if (!gameActive) return;
   
+  // Check if we have any hints left
   if (hintsLeft <= 0) {
+    // No hints left, try to buy
     if (coins >= 20) {
-      const buyHint = confirm("No free hints left! Buy a hint for 20 coins?");
+      const buyHint = confirm("No hints left! Buy a hint for 20 coins?");
       if (buyHint) {
         coins -= 20;
         localStorage.setItem("wordThermometerCoins", coins);
-        hintsLeft++;
         updateDashboard();
+        
+        // Add this hint
+        hintsLeft = 1;
         document.getElementById("hintsLeft").textContent = hintsLeft;
-      } else {
-        return;
+        
+        // Give the hint
+        giveHint();
       }
     } else {
       alert("Not enough coins! You need 20 coins for a hint.");
-      return;
     }
+    return;
   }
-
+  
+  // Use a hint
   hintsLeft--;
   document.getElementById("hintsLeft").textContent = hintsLeft;
-  
-  // Generate hint
+  giveHint();
+}
+
+function giveHint() {
   const hintDisplay = document.getElementById("hintDisplay");
   let currentHint = hintDisplay.textContent.replace(/ /g, "");
   
@@ -366,37 +302,132 @@ function useHint() {
   const hintArray = currentHint.split("");
   const hiddenPositions = [];
   
-  // Find all hidden positions
+  // Find hidden positions
   for (let i = 0; i < hintArray.length; i++) {
     if (hintArray[i] === "_") {
       hiddenPositions.push(i);
     }
   }
   
-  // Reveal a random hidden letter
+  // Reveal random letter
   if (hiddenPositions.length > 0) {
     const randomPos = hiddenPositions[Math.floor(Math.random() * hiddenPositions.length)];
     hintArray[randomPos] = solution[randomPos];
-    
-    // Update display with spaces between letters
     hintDisplay.textContent = hintArray.join(" ");
   }
 }
 
-// Show win screen
+// ============================
+// THERMOMETER & SCORING
+// ============================
+function calculateSimilarity(guess, solution) {
+  let score = 0;
+  
+  // Exact position matches
+  let exactMatches = 0;
+  const minLength = Math.min(guess.length, solution.length);
+  
+  for (let i = 0; i < minLength; i++) {
+    if (guess[i] === solution[i]) {
+      exactMatches++;
+    }
+  }
+  
+  score += (exactMatches / solution.length) * 40;
+  
+  // Common letters
+  const guessLetters = new Set(guess);
+  const solutionLetters = new Set(solution);
+  let commonCount = 0;
+  
+  for (let letter of guessLetters) {
+    if (solutionLetters.has(letter)) {
+      commonCount++;
+    }
+  }
+  
+  score += (commonCount / Math.max(guessLetters.size, solutionLetters.size)) * 40;
+  
+  // Length penalty
+  const lengthDiff = Math.abs(guess.length - solution.length);
+  const maxLengthDiff = Math.max(guess.length, solution.length);
+  score -= (lengthDiff / maxLengthDiff) * 20;
+  
+  // Ensure 0-100 range
+  score = Math.max(0, Math.min(100, score));
+  
+  return Math.round(score);
+}
+
+function getEmojiForScore(score) {
+  if (score < 20) return "🧊";
+  if (score < 40) return "❄️";
+  if (score < 60) return "🌤️";
+  if (score < 80) return "🌶️";
+  return "🔥";
+}
+
+function getColorForScore(score) {
+  if (score < 20) return "#3b82f6";
+  if (score < 40) return "#22c55e";
+  if (score < 60) return "#f97316";
+  return "#ef4444";
+}
+
+function updateThermometer(percentage) {
+  const thermoFill = document.getElementById("thermoFill");
+  thermoFill.style.width = percentage + "%";
+  
+  if (goldThermometer) {
+    // Gold colors
+    if (percentage < 33) {
+      thermoFill.style.background = 'linear-gradient(to right, #FFD700, #FFA500)';
+    } else if (percentage < 66) {
+      thermoFill.style.background = 'linear-gradient(to right, #FFA500, #FF8C00)';
+    } else {
+      thermoFill.style.background = 'linear-gradient(to right, #FF8C00, #FF4500)';
+    }
+  } else {
+    // Default colors
+    if (percentage < 33) {
+      thermoFill.style.background = 'linear-gradient(to right, #3b82f6, #22c55e)';
+    } else if (percentage < 66) {
+      thermoFill.style.background = 'linear-gradient(to right, #22c55e, #f97316)';
+    } else {
+      thermoFill.style.background = 'linear-gradient(to right, #f97316, #ef4444)';
+    }
+  }
+}
+
+function showEmoji(emoji) {
+  const emojiFlash = document.getElementById("emojiFlash");
+  emojiFlash.textContent = emoji;
+  emojiFlash.classList.add("show");
+  
+  setTimeout(function() {
+    emojiFlash.classList.remove("show");
+  }, 800);
+}
+
+// ============================
+// SCREEN MANAGEMENT
+// ============================
 function showWinScreen() {
   document.getElementById("winWord").textContent = solution.toUpperCase();
   document.getElementById("winOverlay").classList.remove("hidden");
 }
 
-// Play again
 function playAgain() {
+  // Show ad after game (33% chance)
+  if (!adFree && Math.random() < 0.33) {
+    showAd("interstitial");
+  }
+  
   document.getElementById("winOverlay").classList.add("hidden");
   document.getElementById("gameScreen").classList.add("hidden");
   document.getElementById("categoryScreen").classList.remove("hidden");
 }
 
-// Go back to categories
 function goBackToCategories() {
   document.getElementById("gameScreen").classList.add("hidden");
   document.getElementById("difficultyScreen").classList.add("hidden");
@@ -405,7 +436,6 @@ function goBackToCategories() {
   document.getElementById("howToPlay").classList.add("hidden");
 }
 
-// Toggle How to Play screen
 function toggleHowToPlay() {
   const howToPlay = document.getElementById("howToPlay");
   const categoryScreen = document.getElementById("categoryScreen");
@@ -419,13 +449,68 @@ function toggleHowToPlay() {
   }
 }
 
-// Update dashboard
+// ============================
+// STORE & MONETIZATION
+// ============================
+function toggleMonetization() {
+  const monetization = document.getElementById("monetization");
+  const categoryScreen = document.getElementById("categoryScreen");
+  
+  if (monetization.classList.contains("hidden")) {
+    monetization.classList.remove("hidden");
+    categoryScreen.classList.add("hidden");
+  } else {
+    monetization.classList.add("hidden");
+    categoryScreen.classList.remove("hidden");
+  }
+}
+
+function closeMonetization() {
+  document.getElementById("monetization").classList.add("hidden");
+  document.getElementById("categoryScreen").classList.remove("hidden");
+}
+
+function watchAdForCoins() {
+  if (adFree) {
+    alert("🎉 You've purchased ad-free version!");
+    return;
+  }
+  
+  // Simulate ad watching
+  showAd("reward");
+  
+  // Reward coins
+  coins += 10;
+  localStorage.setItem("wordThermometerCoins", coins);
+  updateDashboard();
+  
+  setTimeout(function() {
+    alert("✅ +10 coins added!");
+  }, 1500);
+}
+
+function showAd(type) {
+  // This simulates showing ads
+  // In production, replace with AdSense code
+  console.log(`📺 Showing ${type} ad...`);
+  
+  if (type === "difficulty") {
+    alert("📺 Quick ad before game starts... (AdSense would show here)");
+  } else if (type === "reward") {
+    alert("📺 Thanks for watching! +10 coins! (Reward ad would play)");
+  } else if (type === "interstitial") {
+    alert("📺 Thanks for playing! Here's an ad... (Interstitial ad)");
+  }
+}
+
+// ============================
+// DASHBOARD & PROGRESS
+// ============================
 function updateDashboard() {
   document.getElementById("coins").textContent = coins;
   document.getElementById("wins").textContent = wins;
 }
 
-// Reset progress
 function resetProgress() {
   if (confirm("Reset all progress? You'll lose coins, wins, and purchases.")) {
     localStorage.removeItem("wordThermometerCoins");
@@ -445,42 +530,9 @@ function resetProgress() {
   }
 }
 
-// Watch ad for coins (simulated for now)
-function watchAdForCoins() {
-  if (adFree) {
-    alert("🎉 You've purchased ad-free version! No ads for you.");
-    return;
-  }
-  
-  // Simulate ad watching
-  coins += 10;
-  localStorage.setItem("wordThermometerCoins", coins);
-  updateDashboard();
-  
-  // In production, this would integrate with AdSense reward ads
-  alert("+10 coins! Thanks for watching! 🎬");
-}
-
-// Monetization functions
-function toggleMonetization() {
-  const monetization = document.getElementById("monetization");
-  const categoryScreen = document.getElementById("categoryScreen");
-  
-  if (monetization.classList.contains("hidden")) {
-    monetization.classList.remove("hidden");
-    categoryScreen.classList.add("hidden");
-  } else {
-    monetization.classList.add("hidden");
-    categoryScreen.classList.remove("hidden");
-  }
-}
-
-function closeMonetization() {
-  document.getElementById("monetization").classList.add("hidden");
-  document.getElementById("categoryScreen").classList.remove("hidden");
-}
-
-// Confetti effect
+// ============================
+// SPECIAL EFFECTS
+// ============================
 function createConfetti() {
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
   const container = document.body;
@@ -495,7 +547,7 @@ function createConfetti() {
     
     container.appendChild(confetti);
     
-    setTimeout(() => {
+    setTimeout(function() {
       if (confetti.parentNode) {
         confetti.remove();
       }
@@ -503,7 +555,9 @@ function createConfetti() {
   }
 }
 
-// For testing only (remove in production)
+// ============================
+// TESTING (Remove in production)
+// ============================
 function cheat() {
   console.log("🎯 Solution:", solution);
   alert(`Cheat: The word is "${solution}"`);
