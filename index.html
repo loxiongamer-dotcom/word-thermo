@@ -18,10 +18,10 @@
     <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
   </div>
 
-  <!-- Ad Space Top -->
-  <div class="ad-container">
+  <!-- Ad Space Top (Only on category screen) -->
+  <div id="adTop" class="ad-container">
     <div class="ad-placeholder">
-      <p>📱 Ad Space 1 - Top Banner</p>
+      <p>📱 Ad Space - Top Banner</p>
       <small>AdSense will display here</small>
     </div>
   </div>
@@ -39,15 +39,7 @@
     <button onclick="selectCategory('Music')">🎵 Music</button>
     <button onclick="selectCategory('Sports')">⚽ Sports</button>
     
-    <!-- Ad Space Middle -->
-    <div class="ad-container" style="margin: 20px 0;">
-      <div class="ad-placeholder">
-        <p>📱 Ad Space 2 - Category Screen</p>
-        <small>AdSense will display here</small>
-      </div>
-    </div>
-    
-    <div style="margin-top: 10px;">
+    <div style="margin-top: 20px;">
       <button onclick="toggleMonetization()" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">
         💰 Store & Support
       </button>
@@ -64,15 +56,7 @@
     <button onclick="selectDifficulty('Novice')">😅 Novice (7-8 letters)</button>
     <button onclick="selectDifficulty('Expert')">🔥 Expert (9+ letters)</button>
     
-    <!-- Ad Space -->
-    <div class="ad-container" style="margin: 20px 0;">
-      <div class="ad-placeholder">
-        <p>📱 Ad Space 3 - Difficulty Screen</p>
-        <small>Ad plays when selecting difficulty</small>
-      </div>
-    </div>
-    
-    <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 10px;">← Back to Categories</button>
+    <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 20px;">← Back to Categories</button>
   </div>
 
   <!-- Game Screen -->
@@ -86,11 +70,11 @@
       </div>
     </div>
 
-    <!-- Ad Space in Game (Top) -->
+    <!-- Ad Space in Game (Top) - ONLY ONE AD IN GAME NOW -->
     <div class="ad-container" style="margin-bottom: 15px;">
       <div class="ad-placeholder">
-        <p>📱 Ad Space 4 - Game Top</p>
-        <small>Ad generates revenue while playing</small>
+        <p>📱 Game Ad - Top</p>
+        <small>Generates revenue while playing</small>
       </div>
     </div>
 
@@ -123,14 +107,6 @@
 
     <div id="hintDisplay"></div>
     
-    <!-- Ad Space in Game (Middle) -->
-    <div class="ad-container" style="margin: 15px 0;">
-      <div class="ad-placeholder">
-        <p>📱 Ad Space 5 - Game Middle</p>
-        <small>Another ad spot for more revenue</small>
-      </div>
-    </div>
-    
     <!-- Last Guesses -->
     <div id="lastGuesses">
       <h3>Last Guesses</h3>
@@ -141,14 +117,6 @@
     <div id="guessArea">
       <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
       <button onclick="submitGuess()">Submit Guess</button>
-    </div>
-    
-    <!-- Ad Space in Game (Bottom) -->
-    <div class="ad-container" style="margin-top: 20px;">
-      <div class="ad-placeholder">
-        <p>📱 Ad Space 6 - Game Bottom</p>
-        <small>Final ad spot on game screen</small>
-      </div>
     </div>
   </div>
 
@@ -175,14 +143,6 @@
       <p><strong>💰 Store:</strong> Buy hints, remove ads, golden skin!</p>
     </div>
     
-    <!-- Ad Space in Instructions -->
-    <div class="ad-container" style="margin: 20px 0;">
-      <div class="ad-placeholder">
-        <p>📱 Ad Space 7 - Instructions</p>
-        <small>AdSense will display here</small>
-      </div>
-    </div>
-    
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
@@ -193,7 +153,7 @@
     <!-- Ad Space in Store -->
     <div class="ad-container" style="margin-bottom: 20px;">
       <div class="ad-placeholder">
-        <p>📱 Ad Space 8 - Store</p>
+        <p>📱 Store Ad</p>
         <small>Ad before purchases</small>
       </div>
     </div>
@@ -242,79 +202,51 @@
 
 <!-- PayPal Buttons Setup -->
 <script>
-  // This code loads the PayPal buttons
   document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit to make sure PayPal is loaded
     setTimeout(function() {
       if (window.paypal) {
-        console.log("✅ PayPal loaded, creating buttons...");
-        
         // Gold Thermometer Button
-        try {
-          paypal.HostedButtons({
-            hostedButtonId: "H9WB3TEW5VQFG",
-            onApprove: function(data, actions) {
-              localStorage.setItem("goldThermometer", "true");
-              alert("🎉 Gold Thermometer purchased! Refresh to see gold colors.");
-              closeMonetization();
-            }
-          }).render("#paypal-gold-thermometer");
-        } catch (e) {
-          console.error("Gold Thermometer button error:", e);
-        }
+        paypal.HostedButtons({
+          hostedButtonId: "H9WB3TEW5VQFG",
+          onApprove: function(data, actions) {
+            localStorage.setItem("goldThermometer", "true");
+            alert("🎉 Gold Thermometer purchased! Refresh to see gold colors.");
+            closeMonetization();
+          }
+        }).render("#paypal-gold-thermometer");
         
         // Remove Ads Button
-        try {
-          paypal.HostedButtons({
-            hostedButtonId: "3ZTECSYKCCYN8",
-            onApprove: function(data, actions) {
-              localStorage.setItem("adFree", "true");
-              alert("✨ Thank you! All ads removed from your game.");
-              closeMonetization();
-            }
-          }).render("#paypal-remove-ads");
-        } catch (e) {
-          console.error("Remove Ads button error:", e);
-        }
+        paypal.HostedButtons({
+          hostedButtonId: "3ZTECSYKCCYN8",
+          onApprove: function(data, actions) {
+            localStorage.setItem("adFree", "true");
+            alert("✨ Thank you! All ads removed from your game.");
+            closeMonetization();
+          }
+        }).render("#paypal-remove-ads");
         
         // Hint Pack Button
-        try {
-          paypal.HostedButtons({
-            hostedButtonId: "7S553NMVCR4H4",
-            onApprove: function(data, actions) {
-              let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
-              boughtHints += 3;
-              localStorage.setItem("boughtHints", boughtHints);
-              alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints.`);
-              closeMonetization();
-            }
-          }).render("#paypal-hint-pack");
-        } catch (e) {
-          console.error("Hint Pack button error:", e);
-        }
+        paypal.HostedButtons({
+          hostedButtonId: "7S553NMVCR4H4",
+          onApprove: function(data, actions) {
+            let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
+            boughtHints += 3;
+            localStorage.setItem("boughtHints", boughtHints);
+            alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints.`);
+            closeMonetization();
+          }
+        }).render("#paypal-hint-pack");
         
         // Coffee Donation Button
-        try {
-          paypal.HostedButtons({
-            hostedButtonId: "3VKBM98YVCLFG",
-            onApprove: function(data, actions) {
-              alert("☕ Thank you for your support! You just bought me a coffee!");
-              closeMonetization();
-            }
-          }).render("#paypal-coffee");
-        } catch (e) {
-          console.error("Coffee button error:", e);
-        }
-        
-        console.log("✅ All PayPal buttons created!");
-      } else {
-        console.error("❌ PayPal not loaded");
-        // Show message if PayPal fails
-        document.querySelectorAll('.paypal-button').forEach(function(btn) {
-          btn.innerHTML = '<button style="background: #6b7280; padding: 10px;">PayPal Loading...</button>';
-        });
+        paypal.HostedButtons({
+          hostedButtonId: "3VKBM98YVCLFG",
+          onApprove: function(data, actions) {
+            alert("☕ Thank you for your support! You just bought me a coffee!");
+            closeMonetization();
+          }
+        }).render("#paypal-coffee");
       }
-    }, 1000); // Wait 1 second for PayPal to load
+    }, 1000);
   });
 </script>
 
