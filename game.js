@@ -7,17 +7,30 @@ let difficulty = "";
 let solution = "";
 let tries = 8;
 let guesses = [];
-let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 50;
+let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 60; // START WITH 60
 let wins = parseInt(localStorage.getItem("wordThermometerWins")) || 0;
-let hintsLeft = 0;
-let maxHints = 0;
-let freeHintsUsed = 0;
-let boughtHintsAvailable = parseInt(localStorage.getItem("boughtHints")) || 0;
+let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0; // NO FREE HINTS
+let boughtHintsAvailable = hintsLeft;
 let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
 // ============================
-// WORD DATABASE (360+ WORDS)
+// SOUND FUNCTIONS
+// ============================
+function playSound(soundId) {
+  try {
+    const sound = document.getElementById(soundId);
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Sound play failed:", e));
+    }
+  } catch (e) {
+    console.log("Sound error:", e);
+  }
+}
+
+// ============================
+// WORD DATABASE
 // ============================
 const words = {
   Food: {
@@ -73,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  console.log("🔥 Word Thermometer v1.0 - Ready!");
+  console.log("🔥 Word Thermometer v1.1 - Ready!");
 });
 
 // ============================
@@ -113,22 +126,9 @@ function startGame() {
   gameActive = true;
   tries = 8;
   guesses = [];
-  freeHintsUsed = 0;
   
-  // Set hints based on difficulty
-  if (difficulty === "Beginner") {
-    hintsLeft = 1;
-    maxHints = 1;
-  } else if (difficulty === "Novice") {
-    hintsLeft = 2;
-    maxHints = 2;
-  } else {
-    hintsLeft = 3;
-    maxHints = 3;
-  }
-  
-  // Add bought hints
-  hintsLeft += boughtHintsAvailable;
+  // NO FREE HINTS - only bought hints
+  hintsLeft = boughtHintsAvailable;
   
   // Clear UI
   document.getElementById("guessList").innerHTML = "";
@@ -187,6 +187,9 @@ function submitGuess() {
     return;
   }
 
+  // Play guess sound
+  playSound("guessSound");
+  
   // Process guess
   guesses.push(guess);
   tries--;
@@ -205,11 +208,6 @@ function submitGuess() {
   const li = document.createElement("li");
   
   // Color based on temperature
-  let tempClass = "cold-guess";
-  if (similarity >= 80) tempClass = "hot-guess";
-  else if (similarity >= 60) tempClass = "warm-guess";
-  else if (similarity >= 40) tempClass = "cool-guess";
-  
   li.innerHTML = `
     <span>${guess}</span>
     <span style="color: ${getColorForScore(similarity)}; font-weight: bold;">
@@ -232,6 +230,9 @@ function submitGuess() {
     gameActive = false;
     wins++;
     coins += 10;
+    
+    // Play win sound
+    playSound("winSound");
     
     // Save to localStorage
     localStorage.setItem("wordThermometerWins", wins);
@@ -257,38 +258,39 @@ function submitGuess() {
 }
 
 // ============================
-// HINT SYSTEM
+// HINT SYSTEM (20 COINS EACH)
 // ============================
 function useHint() {
   if (!gameActive) return;
   
-  // Check if we have any hints left
-  if (hintsLeft <= 0) {
-    // No hints left, try to buy
-    if (coins >= 20) {
-      const buyHint = confirm("No hints left! Buy a hint for 20 coins?");
-      if (buyHint) {
-        coins -= 20;
-        localStorage.setItem("wordThermometerCoins", coins);
-        updateDashboard();
-        
-        // Add this hint
-        hintsLeft = 1;
-        document.getElementById("hintsLeft").textContent = hintsLeft;
-        
-        // Give the hint
-        giveHint();
-      }
-    } else {
-      alert("Not enough coins! You need 20 coins for a hint.");
-    }
+  // Check if we have any bought hints left
+  if (hintsLeft > 0) {
+    // Use bought hint
+    hintsLeft--;
+    boughtHintsAvailable = hintsLeft;
+    localStorage.setItem("boughtHints", hintsLeft);
+    document.getElementById("hintsLeft").textContent = hintsLeft;
+    giveHint();
     return;
   }
   
-  // Use a hint
-  hintsLeft--;
-  document.getElementById("hintsLeft").textContent = hintsLeft;
-  giveHint();
+  // No hints left, need to buy with coins
+  if (coins >= 20) {
+    const buyHint = confirm("Buy a hint for 20 coins?");
+    if (buyHint) {
+      coins -= 20;
+      localStorage.setItem("wordThermometerCoins", coins);
+      updateDashboard();
+      
+      // Play hint sound
+      playSound("hintSound");
+      
+      // Give the hint
+      giveHint();
+    }
+  } else {
+    alert("Not enough coins! You need 20 coins for a hint.\nGo to Store to buy hint packs!");
+  }
 }
 
 function giveHint() {
@@ -491,15 +493,14 @@ function watchAdForCoins() {
 
 function showAd(type) {
   // This simulates showing ads
-  // In production, replace with AdSense code
   console.log(`📺 Showing ${type} ad...`);
   
   if (type === "difficulty") {
-    alert("📺 Quick ad before game starts... (AdSense would show here)");
+    alert("📺 Quick ad before game starts...");
   } else if (type === "reward") {
-    alert("📺 Thanks for watching! +10 coins! (Reward ad would play)");
+    alert("📺 Thanks for watching! +10 coins!");
   } else if (type === "interstitial") {
-    alert("📺 Thanks for playing! Here's an ad... (Interstitial ad)");
+    alert("📺 Thanks for playing! Here's an ad...");
   }
 }
 
@@ -519,19 +520,19 @@ function resetProgress() {
     localStorage.removeItem("adFree");
     localStorage.removeItem("goldThermometer");
     
-    coins = 50;
+    coins = 60;
     wins = 0;
     boughtHintsAvailable = 0;
     adFree = false;
     goldThermometer = false;
     
     updateDashboard();
-    alert("Progress reset! Starting fresh with 50 coins.");
+    alert("Progress reset! Starting fresh with 60 coins.");
   }
 }
 
 // ============================
-// SPECIAL EFFECTS
+// CONFETTI EFFECT
 // ============================
 function createConfetti() {
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
@@ -556,7 +557,7 @@ function createConfetti() {
 }
 
 // ============================
-// TESTING (Remove in production)
+// TESTING
 // ============================
 function cheat() {
   console.log("🎯 Solution:", solution);
