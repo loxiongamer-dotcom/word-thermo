@@ -7,7 +7,7 @@ let difficulty = "";
 let solution = "";
 let tries = 8;
 let guesses = [];
-let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 60;
+let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 50; // CHANGED FROM 60 TO 50
 let wins = parseInt(localStorage.getItem("wordThermometerWins")) || 0;
 let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0;
 let boughtHintsAvailable = hintsLeft;
@@ -211,7 +211,7 @@ function submitGuess() {
     
     updateDashboard();
     showWinScreen();
-    createConfetti(); // THIS CALLS CONFETTI
+    createConfetti();
     return;
   }
 
@@ -227,12 +227,14 @@ function submitGuess() {
 }
 
 // ============================
-// HINT SYSTEM
+// HINT SYSTEM - 30 COINS (UPDATED)
 // ============================
 function useHint() {
   if (!gameActive) return;
   
+  // Check if we have any bought hints left
   if (hintsLeft > 0) {
+    // Use bought hint
     hintsLeft--;
     boughtHintsAvailable = hintsLeft;
     localStorage.setItem("boughtHints", hintsLeft);
@@ -241,10 +243,11 @@ function useHint() {
     return;
   }
   
-  if (coins >= 20) {
-    const buyHint = confirm("Buy a hint for 20 coins?");
+  // No hints left, need to buy with coins - 30 COINS
+  if (coins >= 30) {
+    const buyHint = confirm(`Buy a hint for 30 coins? You have ${coins} coins.`);
     if (buyHint) {
-      coins -= 20;
+      coins -= 30;
       localStorage.setItem("wordThermometerCoins", coins);
       updateDashboard();
       
@@ -252,7 +255,7 @@ function useHint() {
       giveHint();
     }
   } else {
-    alert("Not enough coins! You need 20 coins for a hint.\nGo to Store to buy hint packs!");
+    alert(`Not enough coins! You need 30 coins for a hint.\nYou have ${coins} coins.\nGo to Store to buy hint packs!`);
   }
 }
 
@@ -471,65 +474,53 @@ function resetProgress() {
     localStorage.removeItem("adFree");
     localStorage.removeItem("goldThermometer");
     
-    coins = 60;
+    coins = 50; // CHANGED FROM 60 TO 50
     wins = 0;
     boughtHintsAvailable = 0;
     adFree = false;
     goldThermometer = false;
     
     updateDashboard();
-    alert("Progress reset! Starting fresh with 60 coins.");
+    alert("Progress reset! Starting fresh with 50 coins.");
   }
 }
 
 // ============================
-// CONFETTI EFFECT - GUARANTEED WORKING
+// CONFETTI EFFECT
 // ============================
 function createConfetti() {
-  console.log("🎉 CONFETTI STARTING!");
+  console.log("🎉 Creating confetti...");
   
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#f97316', '#22c55e', '#3b82f6'];
   
-  // Create 100 confetti pieces
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 80; i++) {
     setTimeout(function() {
-      // Create confetti element
       const confetti = document.createElement('div');
-      
-      // Style directly (no CSS needed in file)
       confetti.style.position = 'fixed';
       confetti.style.top = '-20px';
       confetti.style.left = Math.random() * 100 + '%';
-      confetti.style.width = (Math.random() * 12 + 5) + 'px';
-      confetti.style.height = (Math.random() * 12 + 5) + 'px';
+      confetti.style.width = (Math.random() * 10 + 5) + 'px';
+      confetti.style.height = (Math.random() * 10 + 5) + 'px';
       confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
       confetti.style.zIndex = '9999999';
       confetti.style.pointerEvents = 'none';
-      
-      // Animation
       confetti.style.transition = 'transform ' + (Math.random() * 3 + 2) + 's linear, opacity 2s ease';
       
-      // Add to page
       document.body.appendChild(confetti);
       
-      // Trigger animation
       setTimeout(function() {
         confetti.style.transform = 'translateY(' + (window.innerHeight + 100) + 'px) rotate(' + (Math.random() * 720) + 'deg)';
         confetti.style.opacity = '0';
       }, 10);
       
-      // Remove from DOM
       setTimeout(function() {
         if (confetti.parentNode) {
           confetti.remove();
         }
       }, 5000);
-      
-    }, i * 15); // Stagger the confetti
+    }, i * 15);
   }
-  
-  console.log("✅ CONFETTI FINISHED!");
 }
 
 // ============================
