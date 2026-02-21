@@ -13,136 +13,7 @@ let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0;
 let boughtHintsAvailable = hintsLeft;
 let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
-
-// ============================
-// SOUND SYSTEM - TOGGLE ON/OFF WITH MEMORY
-// ============================
 let soundEnabled = localStorage.getItem("soundEnabled") === "true";
-let bgMusicPlaying = false;
-
-// Initialize sound system
-document.addEventListener('DOMContentLoaded', function() {
-  // Set initial button state
-  updateSoundButton();
-  
-  // If sound was enabled before, turn it on
-  if (soundEnabled) {
-    setTimeout(() => {
-      enableSound(true);
-    }, 500);
-  }
-});
-
-// Toggle sound on/off
-function toggleSound() {
-  if (soundEnabled) {
-    // Turn sound OFF
-    soundEnabled = false;
-    localStorage.setItem("soundEnabled", "false");
-    
-    // Stop all sounds
-    const bgMusic = document.getElementById('bgMusic');
-    if (bgMusic) {
-      bgMusic.pause();
-      bgMusic.currentTime = 0;
-      bgMusicPlaying = false;
-    }
-    
-    updateSoundButton();
-    console.log("🔇 Sound OFF");
-  } else {
-    // Turn sound ON
-    soundEnabled = true;
-    localStorage.setItem("soundEnabled", "true");
-    enableSound();
-    updateSoundButton();
-    console.log("🔊 Sound ON");
-  }
-}
-
-// Enable sound (internal function)
-function enableSound(skipPriming = false) {
-  console.log("🔊 Enabling sound...");
-  
-  if (!skipPriming) {
-    // Prime all sounds
-    const sounds = ['winSound', 'guessSound', 'hintSound', 'bgMusic'];
-    
-    sounds.forEach(soundId => {
-      const sound = document.getElementById(soundId);
-      if (sound) {
-        sound.volume = 0.1;
-        sound.play().then(() => {
-          sound.pause();
-          sound.currentTime = 0;
-          console.log(`✅ ${soundId} primed`);
-        }).catch(e => console.log(`⚠️ ${soundId} error:`, e));
-      }
-    });
-  }
-  
-  // Start background music
-  setTimeout(() => {
-    const bgMusic = document.getElementById('bgMusic');
-    if (bgMusic && !bgMusicPlaying) {
-      bgMusic.volume = 0.2;
-      bgMusic.loop = true;
-      bgMusic.play().then(() => {
-        bgMusicPlaying = true;
-        console.log("🎵 Background music started");
-      }).catch(e => console.log("Music play error:", e));
-    }
-  }, 500);
-}
-
-// Update button appearance
-function updateSoundButton() {
-  const soundBtn = document.getElementById('soundToggle');
-  if (soundBtn) {
-    if (soundEnabled) {
-      soundBtn.innerHTML = '🔊 SOUND ON - TAP TO MUTE';
-      soundBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
-    } else {
-      soundBtn.innerHTML = '🔇 SOUND OFF - TAP TO ENABLE';
-      soundBtn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
-    }
-  }
-}
-
-// ============================
-// PLAY EVENT SOUNDS - SIMPLIFIED
-// ============================
-function playSound(soundId) {
-  // Don't play if sound is disabled
-  if (!soundEnabled) {
-    console.log("🔇 Sound disabled");
-    return;
-  }
-  
-  try {
-    // Map soundId to actual sound files
-    let soundFile = '';
-    if (soundId === 'winSound') {
-      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3';
-    } else if (soundId === 'guessSound') {
-      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3';
-    } else if (soundId === 'hintSound') {
-      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3';
-    } else {
-      return; // Unknown sound
-    }
-    
-    // Create and play audio
-    const audio = new Audio(soundFile);
-    audio.volume = 0.8;
-    audio.play().catch(e => {
-      console.log("🔇 Browser blocked sound:", e);
-    });
-    
-  } catch (e) {
-    console.log("Sound error:", e);
-  }
-}
 
 // ============================
 // WORD DATABASE
@@ -181,8 +52,10 @@ const words = {
 };
 
 // ============================
-// GAME INITIALIZATION
+// SOUND SYSTEM - TOGGLE ON/OFF WITH MEMORY
 // ============================
+
+// Initialize sound system
 document.addEventListener('DOMContentLoaded', function() {
   updateDashboard();
   
@@ -190,9 +63,18 @@ document.addEventListener('DOMContentLoaded', function() {
     updateThermometer(0);
   }
   
-  // Auto-enable sound if previously enabled
-  if (localStorage.getItem("soundEnabled") === "true") {
-    setTimeout(enableSound, 1000);
+  // Set initial button state
+  updateSoundButton();
+  
+  // If sound was enabled before, turn it on
+  if (soundEnabled) {
+    setTimeout(() => {
+      const bgMusic = document.getElementById('bgMusic');
+      if (bgMusic) {
+        bgMusic.volume = 0.2;
+        bgMusic.play().catch(e => console.log("Music play error:", e));
+      }
+    }, 500);
   }
   
   const guessInput = document.getElementById('guessInput');
@@ -204,6 +86,71 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Toggle sound on/off
+function toggleSound() {
+  if (soundEnabled) {
+    // Turn sound OFF
+    soundEnabled = false;
+    localStorage.setItem("soundEnabled", "false");
+    
+    // Stop all sounds
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+    }
+    
+    updateSoundButton();
+    console.log("🔇 Sound OFF");
+  } else {
+    // Turn sound ON
+    soundEnabled = true;
+    localStorage.setItem("soundEnabled", "true");
+    
+    // Start background music
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      bgMusic.volume = 0.2;
+      bgMusic.play().catch(e => console.log("Music play error:", e));
+    }
+    
+    updateSoundButton();
+    console.log("🔊 Sound ON");
+  }
+}
+
+// Update button appearance
+function updateSoundButton() {
+  const soundBtn = document.getElementById('soundToggle');
+  if (soundBtn) {
+    if (soundEnabled) {
+      soundBtn.innerHTML = '🔊 SOUND ON - TAP TO MUTE';
+      soundBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+    } else {
+      soundBtn.innerHTML = '🔇 SOUND OFF - TAP TO ENABLE';
+      soundBtn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+    }
+  }
+}
+
+// ============================
+// PLAY SOUND EFFECTS - USING YOUR MP3 FILES
+// ============================
+function playSound(soundId) {
+  // Don't play if sound is disabled
+  if (!soundEnabled) return;
+  
+  try {
+    const sound = document.getElementById(soundId);
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Sound play failed:", e));
+    }
+  } catch (e) {
+    console.log("Sound error:", e);
+  }
+}
 
 // ============================
 // CATEGORY & DIFFICULTY
@@ -357,7 +304,6 @@ function useHint() {
     boughtHintsAvailable = hintsLeft;
     localStorage.setItem("boughtHints", hintsLeft);
     document.getElementById("hintsLeft").textContent = hintsLeft;
-    playSound("hintSound");
     giveHint();
     return;
   }
@@ -369,7 +315,6 @@ function useHint() {
       localStorage.setItem("wordThermometerCoins", coins);
       updateDashboard();
       
-      playSound("hintSound");
       giveHint();
     }
   } else {
@@ -598,8 +543,10 @@ function resetProgress() {
     boughtHintsAvailable = 0;
     adFree = false;
     goldThermometer = false;
+    soundEnabled = false;
     
     updateDashboard();
+    updateSoundButton();
     alert("Progress reset! Starting fresh with 50 coins.");
   }
 }
