@@ -7,7 +7,7 @@ let difficulty = "";
 let solution = "";
 let tries = 8;
 let guesses = [];
-let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 50; // CHANGED FROM 60 TO 50
+let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 50;
 let wins = parseInt(localStorage.getItem("wordThermometerWins")) || 0;
 let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0;
 let boughtHintsAvailable = hintsLeft;
@@ -15,170 +15,59 @@ let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
 // ============================
-// COMPLETE AUDIO SYSTEM - PASTE HERE
+// SOUND ENABLER - TAP BUTTON FIRST!
 // ============================
-let audioPrimed = false;
-
-// Audio configuration
-const audioConfig = {
-  sounds: {
-    win: { id: 'winSound', volume: 0.8 },
-    guess: { id: 'guessSound', volume: 0.6 },
-    hint: { id: 'hintSound', volume: 0.7 }
-  },
-  music: {
-    enabled: true,
-    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Replace with your own music
-    volume: 0.2
-  }
-};
-
-// Initialize audio system
-function initAudio() {
-  console.log("🎵 Initializing audio system...");
+function enableSound() {
+  console.log("🔊 Enabling sound...");
   
-  // Create background music element if it doesn't exist
-  if (!document.getElementById('bgMusic')) {
-    const bgMusic = document.createElement('audio');
-    bgMusic.id = 'bgMusic';
-    bgMusic.loop = true;
-    bgMusic.volume = audioConfig.music.volume;
-    
-    const source = document.createElement('source');
-    source.src = audioConfig.music.url;
-    source.type = 'audio/mp3';
-    
-    bgMusic.appendChild(source);
-    document.body.appendChild(bgMusic);
-  }
-}
-
-// Play a sound with fallback
-function playGameSound(soundName) {
-  const sound = audioConfig.sounds[soundName];
-  if (!sound) return;
+  // Play and immediately pause all sounds to "prime" them
+  const sounds = ['winSound', 'guessSound', 'hintSound', 'bgMusic'];
   
-  const audioElement = document.getElementById(sound.id);
-  if (!audioElement) return;
-  
-  // Set volume
-  audioElement.volume = sound.volume;
-  
-  // Play with promise handling
-  const playPromise = audioElement.play();
-  
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      console.log(`🔇 ${soundName} sound blocked:`, error);
-      // If blocked, try to prime audio again
-      if (!audioPrimed) {
-        primeAllAudio();
-      }
-    });
-  }
-}
-
-// Prime all audio (play and immediately pause)
-function primeAllAudio() {
-  console.log("🎵 Priming all audio...");
-  audioPrimed = true;
-  
-  // Prime sound effects
-  Object.values(audioConfig.sounds).forEach(sound => {
-    const el = document.getElementById(sound.id);
-    if (el) {
-      el.volume = 0.001; // Almost silent
-      el.play().then(() => {
-        el.pause();
-        el.currentTime = 0;
-        el.volume = sound.volume; // Restore volume
-      }).catch(() => {});
-    }
-  });
-  
-  // Prime background music
-  const bgMusic = document.getElementById('bgMusic');
-  if (bgMusic && audioConfig.music.enabled) {
-    bgMusic.volume = 0.001;
-    bgMusic.play().then(() => {
-      bgMusic.pause();
-      bgMusic.currentTime = 0;
-      bgMusic.volume = audioConfig.music.volume;
-    }).catch(() => {});
-  }
-}
-
-// Start background music
-function startBackgroundMusic() {
-  if (!audioConfig.music.enabled) return;
-  
-  const bgMusic = document.getElementById('bgMusic');
-  if (!bgMusic) return;
-  
-  bgMusic.play().catch(() => {
-    // If autoplay fails, wait for next user interaction
-    const startOnInteraction = function() {
-      bgMusic.play().catch(e => console.log("Still blocked:", e));
-      document.removeEventListener('touchstart', startOnInteraction);
-      document.removeEventListener('click', startOnInteraction);
-    };
-    document.addEventListener('touchstart', startOnInteraction);
-    document.addEventListener('click', startOnInteraction);
-  });
-}
-
-// Stop background music
-function stopBackgroundMusic() {
-  const bgMusic = document.getElementById('bgMusic');
-  if (bgMusic) {
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-  }
-}
-
-// Override your existing playSound function
-window.playSound = function(soundId) {
-  if (soundId === 'winSound') playGameSound('win');
-  else if (soundId === 'guessSound') playGameSound('guess');
-  else if (soundId === 'hintSound') playGameSound('hint');
-  else {
-    // Fallback to original sound playing method
-    try {
-      const sound = document.getElementById(soundId);
-      if (sound) {
+  sounds.forEach(soundId => {
+    const sound = document.getElementById(soundId);
+    if (sound) {
+      sound.volume = 0.1;
+      sound.play().then(() => {
+        sound.pause();
         sound.currentTime = 0;
-        sound.play().catch(e => console.log("Sound play failed:", e));
-      }
-    } catch (e) {
-      console.log("Sound error:", e);
+        console.log(`✅ ${soundId} primed`);
+      }).catch(e => console.log(`⚠️ ${soundId} error:`, e));
     }
+  });
+  
+  // Start background music
+  setTimeout(() => {
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      bgMusic.volume = 0.2;
+      bgMusic.play().catch(e => console.log("Music play error:", e));
+    }
+  }, 500);
+  
+  // Update button
+  const soundBtn = document.getElementById('soundToggle');
+  if (soundBtn) {
+    soundBtn.innerHTML = '🔊 SOUND & MUSIC ENABLED';
+    soundBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+    soundBtn.disabled = true;
   }
-};
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  initAudio();
   
-  // Prime audio on first interaction
-  const firstInteraction = function() {
-    primeAllAudio();
-    startBackgroundMusic();
-    document.removeEventListener('touchstart', firstInteraction);
-    document.removeEventListener('click', firstInteraction);
-  };
-  
-  document.addEventListener('touchstart', firstInteraction, { once: true });
-  document.addEventListener('click', firstInteraction, { once: true });
-});
+  localStorage.setItem("soundEnabled", "true");
+}
 
 // ============================
-// SOUND FUNCTIONS
+// PLAY SOUND FUNCTION
 // ============================
 function playSound(soundId) {
+  if (localStorage.getItem("soundEnabled") !== "true") {
+    return;
+  }
+  
   try {
     const sound = document.getElementById(soundId);
     if (sound) {
       sound.currentTime = 0;
+      sound.volume = soundId === 'bgMusic' ? 0.2 : 0.8;
       sound.play().catch(e => console.log("Sound play failed:", e));
     }
   } catch (e) {
@@ -230,6 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (goldThermometer) {
     updateThermometer(0);
+  }
+  
+  // Auto-enable sound if previously enabled
+  if (localStorage.getItem("soundEnabled") === "true") {
+    setTimeout(enableSound, 1000);
   }
   
   const guessInput = document.getElementById('guessInput');
@@ -384,23 +278,21 @@ function submitGuess() {
 }
 
 // ============================
-// HINT SYSTEM - 30 COINS (UPDATED)
+// HINT SYSTEM - 30 COINS
 // ============================
 function useHint() {
   if (!gameActive) return;
   
-  // Check if we have any bought hints left
   if (hintsLeft > 0) {
-    // Use bought hint
     hintsLeft--;
     boughtHintsAvailable = hintsLeft;
     localStorage.setItem("boughtHints", hintsLeft);
     document.getElementById("hintsLeft").textContent = hintsLeft;
+    playSound("hintSound");
     giveHint();
     return;
   }
   
-  // No hints left, need to buy with coins - 30 COINS
   if (coins >= 30) {
     const buyHint = confirm(`Buy a hint for 30 coins? You have ${coins} coins.`);
     if (buyHint) {
@@ -630,8 +522,9 @@ function resetProgress() {
     localStorage.removeItem("boughtHints");
     localStorage.removeItem("adFree");
     localStorage.removeItem("goldThermometer");
+    localStorage.removeItem("soundEnabled");
     
-    coins = 50; // CHANGED FROM 60 TO 50
+    coins = 50;
     wins = 0;
     boughtHintsAvailable = 0;
     adFree = false;
@@ -646,8 +539,6 @@ function resetProgress() {
 // CONFETTI EFFECT
 // ============================
 function createConfetti() {
-  console.log("🎉 Creating confetti...");
-  
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#f97316', '#22c55e', '#3b82f6'];
   
   for (let i = 0; i < 80; i++) {
