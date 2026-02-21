@@ -51,7 +51,6 @@
 
   <!-- Game Screen -->
   <div id="gameScreen" class="hidden">
-    <!-- Game Header -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <button onclick="goBackToCategories()" style="width: auto; padding: 8px 12px; background: #6b7280; font-size: 14px;">← Back</button>
       <div style="text-align: center;">
@@ -60,13 +59,11 @@
       </div>
     </div>
 
-    <!-- Game Info -->
     <div id="infoBar">
       <div>Word Length: <span id="wordLength"></span></div>
       <div>Tries Left: <span id="tries">8</span></div>
     </div>
 
-    <!-- Thermometer -->
     <div id="thermometerWrap">
       <div id="thermometer">
         <div id="thermoFill"></div>
@@ -78,16 +75,13 @@
       </div>
     </div>
 
-    <!-- Emoji Feedback -->
     <div id="emojiFlash"></div>
 
-    <!-- Last Guesses -->
     <div id="lastGuesses">
       <h3>Last Guesses</h3>
       <ul id="guessList"></ul>
     </div>
 
-    <!-- Hint Section -->
     <div id="hintBar">
       <div>Hints Left: <span id="hintsLeft">0</span></div>
       <button onclick="useHint()">Buy Hint (20 coins)</button>
@@ -95,7 +89,6 @@
 
     <div id="hintDisplay"></div>
 
-    <!-- Guess Input Area -->
     <div id="guessArea">
       <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
       <button onclick="submitGuess()">Submit Guess</button>
@@ -128,7 +121,7 @@
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
-  <!-- STORE & SUPPORT SCREEN - WITH WORKING PAYPAL LINKS -->
+  <!-- STORE & SUPPORT - WITH SIMPLE TEXT LINKS THAT WORK -->
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
     
@@ -136,62 +129,62 @@
       
       <!-- Gold Thermometer -->
       <div class="purchase-item">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">🥇</span>
           <div>
-            <h3 style="margin: 0; color: #f97316;">Gold Thermometer</h3>
-            <p style="margin: 5px 0; font-size: 14px;">$1.99 - Make your thermometer gold!</p>
+            <h3 style="margin: 0; color: #f97316;">Gold Thermometer - $1.99</h3>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Make your thermometer shine gold!</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank">
-          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💰 Buy Now with PayPal</button>
-        </a>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">After purchase, refresh the game</p>
+        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
+          <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO BUY GOLD 👈</a>
+        </div>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">After purchase, refresh the game</p>
       </div>
       
       <!-- Remove Ads -->
       <div class="purchase-item">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">✨</span>
           <div>
-            <h3 style="margin: 0; color: #f97316;">Remove All Ads</h3>
-            <p style="margin: 5px 0; font-size: 14px;">$4.99 - Play ad-free forever!</p>
+            <h3 style="margin: 0; color: #f97316;">Remove All Ads - $4.99</h3>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Play ad-free forever!</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank">
-          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">✨ Buy Now with PayPal</button>
-        </a>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">After purchase, refresh the game</p>
+        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
+          <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO REMOVE ADS 👈</a>
+        </div>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">After purchase, refresh the game</p>
       </div>
       
       <!-- Hint Pack -->
       <div class="purchase-item">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">💡</span>
           <div>
-            <h3 style="margin: 0; color: #f97316;">Hint Pack</h3>
-            <p style="margin: 5px 0; font-size: 14px;">$0.99 - Get 3 extra hints</p>
+            <h3 style="margin: 0; color: #f97316;">Hint Pack - $0.99</h3>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Get 3 extra hints</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank">
-          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💡 Buy Now with PayPal</button>
-        </a>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Hints added automatically after purchase</p>
+        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
+          <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO BUY HINTS 👈</a>
+        </div>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">Hints are added automatically</p>
       </div>
       
       <!-- Coffee Donation -->
       <div class="purchase-item">
-        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">☕</span>
           <div>
             <h3 style="margin: 0; color: #f97316;">Buy Me a Coffee</h3>
-            <p style="margin: 5px 0; font-size: 14px;">Any amount - Support the developer</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Any amount - Support the developer</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank">
-          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">☕ Donate with PayPal</button>
-        </a>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Thank you for your support!</p>
+        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
+          <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO DONATE 👈</a>
+        </div>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">Thank you for your support!</p>
       </div>
       
       <button onclick="closeMonetization()" style="background: #6b7280; margin-top: 20px;">
@@ -210,36 +203,28 @@
 <!-- Game JavaScript -->
 <script src="game.js"></script>
 
-<!-- Simple script to handle purchases -->
+<!-- Simple script to handle hint purchases -->
 <script>
-// Handle hint pack purchase (since it needs to add hints)
-document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
-  link.addEventListener('click', function() {
-    // Store that user is buying hints
-    localStorage.setItem("pendingHintPurchase", "true");
-  });
-});
-
-// Check for pending purchases when page loads
+// Check if user just bought hints
 document.addEventListener('DOMContentLoaded', function() {
-  // Check if user just bought hints
-  if (localStorage.getItem("pendingHintPurchase") === "true") {
+  // Check URL for hint pack purchase (you'll need to set up a return URL)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('hints') === 'bought') {
     let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
     boughtHints += 3;
     localStorage.setItem("boughtHints", boughtHints);
-    localStorage.removeItem("pendingHintPurchase");
     alert("💡 3 hints added to your account! Thank you for your purchase!");
   }
-  
-  // Check for ad-free purchase
-  if (localStorage.getItem("adFree") === "true") {
-    console.log("Ad-free mode active");
-  }
-  
-  // Check for gold thermometer
-  if (localStorage.getItem("goldThermometer") === "true") {
-    console.log("Gold thermometer active");
-  }
+});
+
+// Handle hint pack link clicks
+document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
+  link.addEventListener('click', function() {
+    // Add a return URL parameter so we know they bought hints
+    const currentUrl = window.location.href;
+    const returnUrl = currentUrl + (currentUrl.includes('?') ? '&hints=bought' : '?hints=bought');
+    this.href = this.href + '?returnUrl=' + encodeURIComponent(returnUrl);
+  });
 });
 </script>
 
