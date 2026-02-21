@@ -109,42 +109,36 @@ function updateSoundButton() {
   }
 }
 
-// Play sound effects (called by game)
+// ============================
+// PLAY EVENT SOUNDS - SIMPLIFIED
+// ============================
 function playSound(soundId) {
+  // Don't play if sound is disabled
   if (!soundEnabled) {
-    console.log("🔇 Sound disabled, not playing");
+    console.log("🔇 Sound disabled");
     return;
   }
   
   try {
-    // Create a new audio element for each sound
-    const audio = new Audio();
-    
+    // Map soundId to actual sound files
+    let soundFile = '';
     if (soundId === 'winSound') {
-      audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3';
+      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3';
     } else if (soundId === 'guessSound') {
-      audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3';
+      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3';
     } else if (soundId === 'hintSound') {
-      audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3';
+      soundFile = 'https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3';
     } else {
-      // Fallback to original method
-      const sound = document.getElementById(soundId);
-      if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(e => console.log("Sound play failed:", e));
-      }
-      return;
+      return; // Unknown sound
     }
     
+    // Create and play audio
+    const audio = new Audio(soundFile);
     audio.volume = 0.8;
-    audio.play().catch(e => console.log("Sound play failed:", e));
+    audio.play().catch(e => {
+      console.log("🔇 Browser blocked sound:", e);
+    });
     
-    // Remove the audio element after playing
-    setTimeout(() => {
-      if (audio.parentNode) {
-        audio.remove();
-      }
-    }, 2000);
   } catch (e) {
     console.log("Sound error:", e);
   }
