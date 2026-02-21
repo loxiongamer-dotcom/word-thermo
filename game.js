@@ -15,54 +15,109 @@ let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
 // ============================
-// SOUND ENABLER - TAP BUTTON FIRST!
+// SOUND SYSTEM - TOGGLE ON/OFF WITH MEMORY
 // ============================
-function enableSound() {
+let soundEnabled = localStorage.getItem("soundEnabled") === "true";
+let bgMusicPlaying = false;
+
+// Initialize sound system
+document.addEventListener('DOMContentLoaded', function() {
+  // Set initial button state
+  updateSoundButton();
+  
+  // If sound was enabled before, turn it on
+  if (soundEnabled) {
+    setTimeout(() => {
+      enableSound(true);
+    }, 500);
+  }
+});
+
+// Toggle sound on/off
+function toggleSound() {
+  if (soundEnabled) {
+    // Turn sound OFF
+    soundEnabled = false;
+    localStorage.setItem("soundEnabled", "false");
+    
+    // Stop all sounds
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+      bgMusicPlaying = false;
+    }
+    
+    updateSoundButton();
+    console.log("🔇 Sound OFF");
+  } else {
+    // Turn sound ON
+    soundEnabled = true;
+    localStorage.setItem("soundEnabled", "true");
+    enableSound();
+    updateSoundButton();
+    console.log("🔊 Sound ON");
+  }
+}
+
+// Enable sound (internal function)
+function enableSound(skipPriming = false) {
   console.log("🔊 Enabling sound...");
   
-  // Play and immediately pause all sounds to "prime" them
-  const sounds = ['winSound', 'guessSound', 'hintSound', 'bgMusic'];
-  
-  sounds.forEach(soundId => {
-    const sound = document.getElementById(soundId);
-    if (sound) {
-      sound.volume = 0.1;
-      sound.play().then(() => {
-        sound.pause();
-        sound.currentTime = 0;
-        console.log(`✅ ${soundId} primed`);
-      }).catch(e => console.log(`⚠️ ${soundId} error:`, e));
-    }
-  });
+  if (!skipPriming) {
+    // Prime all sounds
+    const sounds = ['winSound', 'guessSound', 'hintSound', 'bgMusic'];
+    
+    sounds.forEach(soundId => {
+      const sound = document.getElementById(soundId);
+      if (sound) {
+        sound.volume = 0.1;
+        sound.play().then(() => {
+          sound.pause();
+          sound.currentTime = 0;
+          console.log(`✅ ${soundId} primed`);
+        }).catch(e => console.log(`⚠️ ${soundId} error:`, e));
+      }
+    });
+  }
   
   // Start background music
   setTimeout(() => {
     const bgMusic = document.getElementById('bgMusic');
-    if (bgMusic) {
+    if (bgMusic && !bgMusicPlaying) {
       bgMusic.volume = 0.2;
-      bgMusic.play().catch(e => console.log("Music play error:", e));
+      bgMusic.loop = true;
+      bgMusic.play().then(() => {
+        bgMusicPlaying = true;
+        console.log("🎵 Background music started");
+      }).catch(e => console.log("Music play error:", e));
     }
   }, 500);
-  
-  // Update button
-  const soundBtn = document.getElementById('soundToggle');
-  if (soundBtn) {
-    soundBtn.innerHTML = '🔊 SOUND & MUSIC ENABLED';
-    soundBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
-    soundBtn.disabled = true;
-  }
-  
-  localStorage.setItem("soundEnabled", "true");
 }
 
-// ============================
-// PLAY SOUND FUNCTION - SUPER SIMPLE VERSION
-// ============================
+// Update button appearance
+function updateSoundButton() {
+  const soundBtn = document.getElementById('soundToggle');
+  if (soundBtn) {
+    if (soundEnabled) {
+      soundBtn.innerHTML = '🔊 SOUND ON - TAP TO MUTE';
+      soundBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+    } else {
+      soundBtn.innerHTML = '🔇 SOUND OFF - TAP TO ENABLE';
+      soundBtn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+    }
+  }
+}
+
+// Play sound effects (called by game)
 function playSound(soundId) {
-  if (localStorage.getItem("soundEnabled") !== "true") return;
+  if (!soundEnabled) {
+    console.log("🔇 Sound disabled, not playing");
+    return;
+  }
   
   try {
-    // Create a new audio element each time
+    // Create a new audio element for each sound
     const audio = new Audio();
     
     if (soundId === 'winSound') {
@@ -71,10 +126,25 @@ function playSound(soundId) {
       audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3';
     } else if (soundId === 'hintSound') {
       audio.src = 'https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3';
+    } else {
+      // Fallback to original method
+      const sound = document.getElementById(soundId);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Sound play failed:", e));
+      }
+      return;
     }
     
     audio.volume = 0.8;
     audio.play().catch(e => console.log("Sound play failed:", e));
+    
+    // Remove the audio element after playing
+    setTimeout(() => {
+      if (audio.parentNode) {
+        audio.remove();
+      }
+    }, 2000);
   } catch (e) {
     console.log("Sound error:", e);
   }
