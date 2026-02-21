@@ -1,3 +1,6 @@
+/* ============================
+   MAIN STYLES
+   ============================ */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -15,7 +18,9 @@ body {
   box-sizing: border-box;
 }
 
-/* Dashboard */
+/* ============================
+   DASHBOARD
+   ============================ */
 #dashboard {
   display: flex;
   justify-content: space-between;
@@ -26,19 +31,30 @@ body {
   margin-bottom: 12px;
   font-weight: 600;
   font-size: 14px;
+  border: 1px solid #302b63;
 }
 
-/* Headings */
+#dashboard button {
+  width: auto;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* ============================
+   HEADINGS
+   ============================ */
 h2 {
   text-align: center;
   margin-bottom: 10px;
   color: #f97316;
-  font-size: 20px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
 h3 {
   margin: 0 0 8px 0;
-  font-size: 15px;
+  font-size: 16px;
   color: #3b82f6;
 }
 
@@ -48,10 +64,12 @@ h4 {
   font-size: 16px;
 }
 
-/* Buttons */
+/* ============================
+   BUTTONS
+   ============================ */
 button {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin: 6px 0;
   font-size: 15px;
   border: none;
@@ -60,13 +78,34 @@ button {
   color: white;
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 button:active {
   transform: scale(0.98);
 }
 
-/* Input */
+button:hover {
+  opacity: 0.9;
+}
+
+/* Special button colors */
+#hintBar button {
+  width: auto;
+  padding: 8px 16px;
+  margin: 0;
+  font-size: 13px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+#guessArea button {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+/* ============================
+   INPUT FIELD
+   ============================ */
 input {
   width: calc(100% - 30px);
   padding: 14px;
@@ -76,19 +115,24 @@ input {
   background: #0f1236;
   color: white;
   box-sizing: border-box;
+  outline: none;
 }
 
 input:focus {
-  outline: none;
   border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
-/* Hidden class */
+/* ============================
+   HIDDEN SCREENS
+   ============================ */
 .hidden {
   display: none !important;
 }
 
-/* Game Info Bar */
+/* ============================
+   GAME INFO BAR
+   ============================ */
 #infoBar {
   display: flex;
   justify-content: space-between;
@@ -97,9 +141,12 @@ input:focus {
   border-radius: 8px;
   margin-bottom: 10px;
   font-size: 13px;
+  border: 1px solid #302b63;
 }
 
-/* Thermometer */
+/* ============================
+   THERMOMETER
+   ============================ */
 #thermometerWrap {
   margin: 15px 0;
 }
@@ -130,7 +177,9 @@ input:focus {
   font-weight: bold;
 }
 
-/* Emoji Feedback */
+/* ============================
+   EMOJI FEEDBACK
+   ============================ */
 #emojiFlash {
   text-align: center;
   font-size: 40px;
@@ -146,7 +195,9 @@ input:focus {
   transform: scale(1.2);
 }
 
-/* Hint Bar */
+/* ============================
+   HINT SECTION
+   ============================ */
 #hintBar {
   display: flex;
   justify-content: space-between;
@@ -156,17 +207,9 @@ input:focus {
   border-radius: 8px;
   margin: 10px 0;
   font-size: 13px;
+  border: 1px solid #302b63;
 }
 
-#hintBar button {
-  width: auto;
-  padding: 6px 12px;
-  margin: 0;
-  font-size: 13px;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-}
-
-/* Hint Display */
 #hintDisplay {
   text-align: center;
   font-size: 22px;
@@ -181,18 +224,22 @@ input:focus {
   border: 2px dashed #3b82f6;
 }
 
-/* Last Guesses */
+/* ============================
+   LAST GUESSES
+   ============================ */
 #lastGuesses {
   background: #0f1236;
   padding: 10px;
   border-radius: 8px;
   margin: 10px 0;
+  border: 1px solid #302b63;
 }
 
 #lastGuesses h3 {
   margin: 0 0 6px 0;
   font-size: 13px;
   opacity: 0.8;
+  color: #ffffff;
 }
 
 #lastGuesses ul {
@@ -206,17 +253,24 @@ input:focus {
   justify-content: space-between;
   font-size: 13px;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #lastGuesses li:last-child {
   border-bottom: none;
 }
 
-/* Guess Area (NOW AT BOTTOM) */
+/* Temperature colors */
+.cold-guess { color: #3b82f6; }
+.warm-guess { color: #f97316; }
+.hot-guess { color: #ef4444; }
+
+/* ============================
+   GUESS AREA
+   ============================ */
 #guessArea {
-  margin-top: auto;
-  padding-top: 15px;
+  margin-top: 15px;
+  padding-top: 10px;
   position: sticky;
   bottom: 0;
   background: linear-gradient(transparent, #050717 30%);
@@ -225,49 +279,62 @@ input:focus {
 
 #guessArea button {
   margin-top: 8px;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
 }
 
-/* Win Screen */
+/* ============================
+   WIN SCREEN
+   ============================ */
 #winOverlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: 1000000;
 }
 
 #winCard {
   background: linear-gradient(135deg, #14184a, #0f1236);
-  padding: 20px;
-  border-radius: 12px;
+  padding: 25px;
+  border-radius: 15px;
   width: 85%;
   max-width: 300px;
   text-align: center;
-  border: 2px solid #f97316;
+  border: 3px solid #f97316;
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
 }
 
 #winCard h2 {
   margin-top: 0;
   color: #22c55e;
-  font-size: 22px;
+  font-size: 24px;
 }
 
 #winWord {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
-  letter-spacing: 3px;
-  margin: 12px 0;
+  letter-spacing: 4px;
+  margin: 15px 0;
   color: #f97316;
   font-family: monospace;
+  text-transform: uppercase;
 }
 
-/* Purchase Items */
+/* ============================
+   STORE & PURCHASES
+   ============================ */
+#monetization {
+  background: linear-gradient(135deg, #14184a, #0f1236);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  border: 2px solid #f97316;
+}
+
 .purchase-options {
   background: rgba(255, 255, 255, 0.05);
   padding: 15px;
@@ -275,27 +342,71 @@ input:focus {
 }
 
 .purchase-item {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 8px;
-  margin: 10px 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.purchase-item h3 {
+  margin: 0;
+  color: #f97316;
+  font-size: 18px;
 }
 
 .purchase-item p {
-  margin: 0;
-  font-size: 13px;
-  opacity: 0.8;
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+  font-size: 14px;
 }
 
-.paypal-button {
-  margin-top: 8px;
-  min-height: 42px;
+/* PayPal Button Containers */
+.paypal-button-container {
+  min-height: 45px;
+  margin: 10px 0;
   border-radius: 8px;
   overflow: hidden;
+  background: transparent;
 }
 
-/* Confetti Animation */
+.paypal-button-container iframe {
+  width: 100% !important;
+  border: none !important;
+}
+
+/* Fallback buttons */
+.fallback-paypal-button {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+
+/* ============================
+   HOW TO PLAY SCREEN
+   ============================ */
+#howToPlay {
+  background: linear-gradient(135deg, #14184a, #0f1236);
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+  border: 2px solid #3b82f6;
+}
+
+#howToPlay p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+/* ============================
+   CONFETTI ANIMATION
+   ============================ */
 .confetti {
   position: fixed;
   top: -20px;
@@ -320,30 +431,116 @@ input:focus {
   }
 }
 
-/* Make sure win overlay is above confetti */
-#winOverlay {
-  z-index: 1000000 !important;
+/* ============================
+   AD PLACEHOLDERS
+   ============================ */
+.ad-container {
+  background: #0c0f2e;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 2px solid #3b82f6;
 }
 
-/* Mobile Optimizations */
-@media (max-height: 700px) {
-  #thermometer {
-    height: 20px;
+.ad-placeholder {
+  padding: 30px 20px;
+  text-align: center;
+  color: #9ca3af;
+  background: linear-gradient(135deg, #0c0f2e, #14184a);
+}
+
+.ad-placeholder p {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  color: #60a5fa;
+}
+
+.ad-placeholder small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ============================
+   BACK BUTTONS
+   ============================ */
+.back-button {
+  background: #6b7280 !important;
+  margin-top: 20px;
+}
+
+/* ============================
+   MOBILE OPTIMIZATIONS
+   ============================ */
+@media (max-width: 480px) {
+  #app {
+    padding: 10px;
+  }
+  
+  button {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  input {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  h2 {
+    font-size: 20px;
   }
   
   #hintDisplay {
     font-size: 18px;
     letter-spacing: 4px;
-    margin: 10px 0;
+    padding: 10px;
+  }
+  
+  .purchase-item {
+    padding: 12px;
+  }
+}
+
+/* Small height screens */
+@media (max-height: 700px) {
+  #thermometer {
+    height: 20px;
   }
   
   #emojiFlash {
     font-size: 32px;
     height: 36px;
   }
+  
+  #hintDisplay {
+    margin: 10px 0;
+  }
 }
 
-/* Hide audio elements */
+/* ============================
+   HIDE AUDIO ELEMENTS
+   ============================ */
 audio {
   display: none;
+}
+
+/* ============================
+   UTILITY CLASSES
+   ============================ */
+.text-center {
+  text-align: center;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
