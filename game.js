@@ -15,6 +15,163 @@ let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
 
 // ============================
+// COMPLETE AUDIO SYSTEM - PASTE HERE
+// ============================
+let audioPrimed = false;
+
+// Audio configuration
+const audioConfig = {
+  sounds: {
+    win: { id: 'winSound', volume: 0.8 },
+    guess: { id: 'guessSound', volume: 0.6 },
+    hint: { id: 'hintSound', volume: 0.7 }
+  },
+  music: {
+    enabled: true,
+    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Replace with your own music
+    volume: 0.2
+  }
+};
+
+// Initialize audio system
+function initAudio() {
+  console.log("🎵 Initializing audio system...");
+  
+  // Create background music element if it doesn't exist
+  if (!document.getElementById('bgMusic')) {
+    const bgMusic = document.createElement('audio');
+    bgMusic.id = 'bgMusic';
+    bgMusic.loop = true;
+    bgMusic.volume = audioConfig.music.volume;
+    
+    const source = document.createElement('source');
+    source.src = audioConfig.music.url;
+    source.type = 'audio/mp3';
+    
+    bgMusic.appendChild(source);
+    document.body.appendChild(bgMusic);
+  }
+}
+
+// Play a sound with fallback
+function playGameSound(soundName) {
+  const sound = audioConfig.sounds[soundName];
+  if (!sound) return;
+  
+  const audioElement = document.getElementById(sound.id);
+  if (!audioElement) return;
+  
+  // Set volume
+  audioElement.volume = sound.volume;
+  
+  // Play with promise handling
+  const playPromise = audioElement.play();
+  
+  if (playPromise !== undefined) {
+    playPromise.catch(error => {
+      console.log(`🔇 ${soundName} sound blocked:`, error);
+      // If blocked, try to prime audio again
+      if (!audioPrimed) {
+        primeAllAudio();
+      }
+    });
+  }
+}
+
+// Prime all audio (play and immediately pause)
+function primeAllAudio() {
+  console.log("🎵 Priming all audio...");
+  audioPrimed = true;
+  
+  // Prime sound effects
+  Object.values(audioConfig.sounds).forEach(sound => {
+    const el = document.getElementById(sound.id);
+    if (el) {
+      el.volume = 0.001; // Almost silent
+      el.play().then(() => {
+        el.pause();
+        el.currentTime = 0;
+        el.volume = sound.volume; // Restore volume
+      }).catch(() => {});
+    }
+  });
+  
+  // Prime background music
+  const bgMusic = document.getElementById('bgMusic');
+  if (bgMusic && audioConfig.music.enabled) {
+    bgMusic.volume = 0.001;
+    bgMusic.play().then(() => {
+      bgMusic.pause();
+      bgMusic.currentTime = 0;
+      bgMusic.volume = audioConfig.music.volume;
+    }).catch(() => {});
+  }
+}
+
+// Start background music
+function startBackgroundMusic() {
+  if (!audioConfig.music.enabled) return;
+  
+  const bgMusic = document.getElementById('bgMusic');
+  if (!bgMusic) return;
+  
+  bgMusic.play().catch(() => {
+    // If autoplay fails, wait for next user interaction
+    const startOnInteraction = function() {
+      bgMusic.play().catch(e => console.log("Still blocked:", e));
+      document.removeEventListener('touchstart', startOnInteraction);
+      document.removeEventListener('click', startOnInteraction);
+    };
+    document.addEventListener('touchstart', startOnInteraction);
+    document.addEventListener('click', startOnInteraction);
+  });
+}
+
+// Stop background music
+function stopBackgroundMusic() {
+  const bgMusic = document.getElementById('bgMusic');
+  if (bgMusic) {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  }
+}
+
+// Override your existing playSound function
+window.playSound = function(soundId) {
+  if (soundId === 'winSound') playGameSound('win');
+  else if (soundId === 'guessSound') playGameSound('guess');
+  else if (soundId === 'hintSound') playGameSound('hint');
+  else {
+    // Fallback to original sound playing method
+    try {
+      const sound = document.getElementById(soundId);
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log("Sound play failed:", e));
+      }
+    } catch (e) {
+      console.log("Sound error:", e);
+    }
+  }
+};
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initAudio();
+  
+  // Prime audio on first interaction
+  const firstInteraction = function() {
+    primeAllAudio();
+    startBackgroundMusic();
+    document.removeEventListener('touchstart', firstInteraction);
+    document.removeEventListener('click', firstInteraction);
+  };
+  
+  document.addEventListener('touchstart', firstInteraction, { once: true });
+  document.addEventListener('click', firstInteraction, { once: true });
+});
+
+// ============================
 // SOUND FUNCTIONS
 // ============================
 function playSound(soundId) {
