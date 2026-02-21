@@ -11,9 +11,16 @@
 
   <!-- Top Dashboard -->
   <div id="dashboard">
-    <div>Coins: <span id="coins">60</span></div>
+    <div>Coins: <span id="coins">50</span></div>
     <div>Wins: <span id="wins">0</span></div>
     <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
+  </div>
+
+  <!-- Sound Control Button - TAP THIS FIRST! -->
+  <div id="soundControl" style="text-align: center; margin-bottom: 10px;">
+    <button id="soundToggle" onclick="enableSound()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 10px; font-size: 15px; font-weight: bold;">
+      🔇 TAP HERE TO ENABLE SOUND & MUSIC
+    </button>
   </div>
 
   <!-- Category Selection Screen -->
@@ -82,6 +89,7 @@
       <ul id="guessList"></ul>
     </div>
 
+    <!-- Hint Section - UPDATED TO 30 COINS -->
     <div id="hintBar">
       <div>Hints Left: <span id="hintsLeft">0</span></div>
       <button onclick="useHint()">Buy Hint (30 coins)</button>
@@ -106,7 +114,7 @@
     </div>
   </div>
 
-  <!-- How to Play Screen -->
+  <!-- How to Play Screen - UPDATED TO 30 COINS -->
   <div id="howToPlay" class="hidden">
     <h2>❓ How to Play</h2>
     <div style="background: #0f1236; padding: 15px; border-radius: 10px; margin: 15px 0;">
@@ -114,14 +122,14 @@
       <p><strong>🌡️ Thermometer:</strong> Shows how close your guess is</p>
       <p><strong>🧊→🔥:</strong> Cold (far) to Hot (close)</p>
       <p><strong>💡 Hints:</strong> All hints cost 30 coins</p>
-      <p><strong>🪙 Coins:</strong> Start with 60 coins, +10 for winning</p>
+      <p><strong>🪙 Coins:</strong> Start with 50 coins, +10 for winning</p>
       <p><strong>💰 Store:</strong> Buy hint packs, remove ads, golden skin!</p>
     </div>
     
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
-  <!-- STORE & SUPPORT - WITH SIMPLE TEXT LINKS THAT WORK -->
+  <!-- STORE & SUPPORT SCREEN -->
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
     
@@ -136,10 +144,9 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Make your thermometer shine gold!</p>
           </div>
         </div>
-        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
-          <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO BUY GOLD 👈</a>
-        </div>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">After purchase, refresh the game</p>
+        <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank">
+          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💰 BUY NOW WITH PAYPAL</button>
+        </a>
       </div>
       
       <!-- Remove Ads -->
@@ -151,10 +158,9 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Play ad-free forever!</p>
           </div>
         </div>
-        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
-          <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO REMOVE ADS 👈</a>
-        </div>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">After purchase, refresh the game</p>
+        <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank">
+          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">✨ BUY NOW WITH PAYPAL</button>
+        </a>
       </div>
       
       <!-- Hint Pack -->
@@ -166,10 +172,9 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Get 3 extra hints</p>
           </div>
         </div>
-        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
-          <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO BUY HINTS 👈</a>
-        </div>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">Hints are added automatically</p>
+        <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank">
+          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💡 BUY NOW WITH PAYPAL</button>
+        </a>
       </div>
       
       <!-- Coffee Donation -->
@@ -181,10 +186,9 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Any amount - Support the developer</p>
           </div>
         </div>
-        <div style="background: #0f1236; padding: 12px; border-radius: 8px; text-align: center;">
-          <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank" style="color: #f97316; font-size: 18px; font-weight: bold; text-decoration: none;">👉 CLICK HERE TO DONATE 👈</a>
-        </div>
-        <p style="font-size: 12px; opacity: 0.7; margin-top: 8px; text-align: center;">Thank you for your support!</p>
+        <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank">
+          <button style="background: linear-gradient(135deg, #f97316, #ea580c);">☕ DONATE WITH PAYPAL</button>
+        </a>
       </div>
       
       <button onclick="closeMonetization()" style="background: #6b7280; margin-top: 20px;">
@@ -195,26 +199,28 @@
 
 </div>
 
-<!-- Sound Effects -->
-<audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
-<audio id="guessSound" src="https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3" preload="auto"></audio>
-<audio id="hintSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3" preload="auto"></audio>
-
-<!-- Background Music -->
+<!-- AUDIO ELEMENTS - ALL SOUNDS HERE -->
+<audio id="winSound" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" type="audio/mp3">
+</audio>
+<audio id="guessSound" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3" type="audio/mp3">
+</audio>
+<audio id="hintSound" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3" type="audio/mp3">
+</audio>
 <audio id="bgMusic" loop preload="auto">
   <source src="idoberg-fun-indie-game-type-jazz-music-483446.mp3" type="audio/mp3">
   <source src="https://assets.mixkit.co/music/download/mixkit-game-opener-352.mp3" type="audio/mp3">
-  Your browser does not support audio.
 </audio>
 
 <!-- Game JavaScript -->
 <script src="game.js"></script>
 
-<!-- Simple script to handle hint purchases -->
+<!-- Hint Pack Purchase Handler -->
 <script>
-// Check if user just bought hints
 document.addEventListener('DOMContentLoaded', function() {
-  // Check URL for hint pack purchase (you'll need to set up a return URL)
+  // Check if user just bought hints
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('hints') === 'bought') {
     let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
@@ -227,7 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Handle hint pack link clicks
 document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
   link.addEventListener('click', function() {
-    // Add a return URL parameter so we know they bought hints
     const currentUrl = window.location.href;
     const returnUrl = currentUrl + (currentUrl.includes('?') ? '&hints=bought' : '?hints=bought');
     this.href = this.href + '?returnUrl=' + encodeURIComponent(returnUrl);
