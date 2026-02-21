@@ -16,11 +16,19 @@
     <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
   </div>
 
-  <!-- Sound Control Button - TOGGLE ON/OFF -->
+  <!-- Sound Control Button -->
   <div id="soundControl" style="text-align: center; margin-bottom: 10px;">
     <button id="soundToggle" onclick="toggleSound()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 10px; font-size: 15px; font-weight: bold; width: 100%;">
       🔇 SOUND OFF - TAP TO ENABLE
     </button>
+  </div>
+
+  <!-- TOP BANNER AD - Visible on all screens -->
+  <div id="topBannerAd" class="ad-container">
+    <div class="ad-placeholder">
+      <p>📱 Advertisement</p>
+      <small>AdSense Banner - 320x50</small>
+    </div>
   </div>
 
   <!-- Category Selection Screen -->
@@ -52,6 +60,14 @@
     <button onclick="selectDifficulty('Beginner')">🥶 Beginner (5-6 letters)</button>
     <button onclick="selectDifficulty('Novice')">😅 Novice (7-8 letters)</button>
     <button onclick="selectDifficulty('Expert')">🔥 Expert (9+ letters)</button>
+    
+    <!-- Ad in difficulty screen -->
+    <div class="ad-container" style="margin: 20px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Advertisement</p>
+        <small>AdSense Banner</small>
+      </div>
+    </div>
     
     <button onclick="goBackToCategories()" style="background: #6b7280; margin-top: 20px;">← Back to Categories</button>
   </div>
@@ -89,7 +105,7 @@
       <ul id="guessList"></ul>
     </div>
 
-    <!-- Hint Section - 30 COINS -->
+    <!-- Hint Section -->
     <div id="hintBar">
       <div>Hints Left: <span id="hintsLeft">0</span></div>
       <button onclick="useHint()">Buy Hint (30 coins)</button>
@@ -100,6 +116,14 @@
     <div id="guessArea">
       <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
       <button onclick="submitGuess()">Submit Guess</button>
+    </div>
+
+    <!-- BOTTOM BANNER AD - Always visible under Submit Guess -->
+    <div id="bottomBannerAd" class="ad-container" style="margin-top: 20px;">
+      <div class="ad-placeholder">
+        <p>📱 Advertisement</p>
+        <small>AdSense Banner - 320x50</small>
+      </div>
     </div>
   </div>
 
@@ -114,7 +138,7 @@
     </div>
   </div>
 
-  <!-- How to Play Screen - 30 COINS -->
+  <!-- How to Play Screen -->
   <div id="howToPlay" class="hidden">
     <h2>❓ How to Play</h2>
     <div style="background: #0f1236; padding: 15px; border-radius: 10px; margin: 15px 0;">
@@ -126,12 +150,26 @@
       <p><strong>💰 Store:</strong> Buy hint packs, remove ads, golden skin!</p>
     </div>
     
+    <!-- Ad in How to Play -->
+    <div class="ad-container" style="margin: 20px 0;">
+      <div class="ad-placeholder">
+        <p>📱 Advertisement</p>
+      </div>
+    </div>
+    
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
   <!-- STORE & SUPPORT SCREEN -->
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
+    
+    <!-- Ad in Store -->
+    <div class="ad-container" style="margin-bottom: 20px;">
+      <div class="ad-placeholder">
+        <p>📱 Advertisement</p>
+      </div>
+    </div>
     
     <div class="purchase-options">
       
@@ -199,7 +237,7 @@
 
 </div>
 
-<!-- AUDIO ELEMENTS - USING YOUR DOWNLOADED MP3 FILES -->
+<!-- AUDIO ELEMENTS -->
 <audio id="winSound" preload="auto">
   <source src="win-game.mp3" type="audio/mp3">
 </audio>
@@ -216,7 +254,6 @@
 <!-- Hint Pack Purchase Handler -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Check if user just bought hints
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('hints') === 'bought') {
     let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
@@ -226,7 +263,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Handle hint pack link clicks
 document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
   link.addEventListener('click', function() {
     const currentUrl = window.location.href;
