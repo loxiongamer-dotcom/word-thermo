@@ -56,19 +56,36 @@ function enableSound() {
 }
 
 // ============================
-// PLAY SOUND FUNCTION
+// PLAY SOUND FUNCTION - FIXED FOR EVENT SOUNDS
 // ============================
 function playSound(soundId) {
+  // Don't try to play if sound hasn't been enabled yet
   if (localStorage.getItem("soundEnabled") !== "true") {
+    console.log("🔇 Sound not enabled yet");
     return;
   }
   
   try {
     const sound = document.getElementById(soundId);
     if (sound) {
-      sound.currentTime = 0;
-      sound.volume = soundId === 'bgMusic' ? 0.2 : 0.8;
-      sound.play().catch(e => console.log("Sound play failed:", e));
+      // Create a fresh copy of the sound to play
+      const soundClone = sound.cloneNode();
+      soundClone.volume = 0.8;
+      
+      // Play the cloned sound
+      soundClone.play().catch(e => {
+        console.log("Sound play failed:", e);
+        // If clone fails, try original with reset
+        sound.currentTime = 0;
+        sound.play().catch(e2 => console.log("Original also failed:", e2));
+      });
+      
+      // Remove the clone after it plays
+      setTimeout(() => {
+        if (soundClone.parentNode) {
+          soundClone.remove();
+        }
+      }, 2000);
     }
   } catch (e) {
     console.log("Sound error:", e);
