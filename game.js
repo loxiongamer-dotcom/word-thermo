@@ -509,16 +509,38 @@ function watchAdForCoins() {
   }, 1500);
 }
 
+// ============================
+// AD HANDLING - PAUSES MUSIC
+// ============================
 function showAd(type) {
   console.log(`📺 Showing ${type} ad...`);
   
-  if (type === "difficulty") {
-    alert("📺 Quick ad before game starts...");
-  } else if (type === "reward") {
-    alert("📺 Thanks for watching! +10 coins!");
-  } else if (type === "interstitial") {
-    alert("📺 Thanks for playing! Here's an ad...");
+  // Pause background music if it's playing
+  const bgMusic = document.getElementById('bgMusic');
+  let musicWasPlaying = false;
+  
+  if (bgMusic && !bgMusic.paused && soundEnabled) {
+    musicWasPlaying = true;
+    bgMusic.pause();
+    console.log("🎵 Music paused for ad");
   }
+  
+  // Show ad message (replace with actual AdSense code later)
+  if (type === "difficulty") {
+    alert("📺 Advertisement loading... (AdSense will show here)");
+  } else if (type === "reward") {
+    alert("📺 Watch this ad for +10 coins!");
+  } else if (type === "interstitial") {
+    alert("📺 Advertisement... (AdSense interstitial)");
+  }
+  
+  // Resume music after ad (simulated 2 seconds)
+  setTimeout(() => {
+    if (musicWasPlaying && soundEnabled) {
+      bgMusic.play().catch(e => console.log("Music resume error:", e));
+      console.log("🎵 Music resumed after ad");
+    }
+  }, 2000);
 }
 
 // ============================
