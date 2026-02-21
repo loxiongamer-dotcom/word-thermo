@@ -7,9 +7,9 @@ let difficulty = "";
 let solution = "";
 let tries = 8;
 let guesses = [];
-let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 60; // START WITH 60
+let coins = parseInt(localStorage.getItem("wordThermometerCoins")) || 60;
 let wins = parseInt(localStorage.getItem("wordThermometerWins")) || 0;
-let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0; // NO FREE HINTS
+let hintsLeft = parseInt(localStorage.getItem("boughtHints")) || 0;
 let boughtHintsAvailable = hintsLeft;
 let adFree = localStorage.getItem("adFree") === "true" || false;
 let goldThermometer = localStorage.getItem("goldThermometer") === "true" || false;
@@ -71,12 +71,10 @@ const words = {
 document.addEventListener('DOMContentLoaded', function() {
   updateDashboard();
   
-  // Apply gold thermometer if purchased
   if (goldThermometer) {
     updateThermometer(0);
   }
   
-  // Setup Enter key for guess input
   const guessInput = document.getElementById('guessInput');
   if (guessInput) {
     guessInput.addEventListener('keypress', function(e) {
@@ -85,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  
-  console.log("🔥 Word Thermometer v1.1 - Ready!");
 });
 
 // ============================
@@ -101,17 +97,14 @@ function selectCategory(cat) {
 function selectDifficulty(diff) {
   difficulty = diff;
   
-  // Show ad when selecting difficulty
   if (!adFree) {
     showAd("difficulty");
   }
   
-  // Start game after ad
   setTimeout(function() {
     document.getElementById("difficultyScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
     
-    // Show current category and difficulty
     document.getElementById("currentCategory").textContent = category;
     document.getElementById("currentDifficulty").textContent = difficulty;
     
@@ -126,39 +119,29 @@ function startGame() {
   gameActive = true;
   tries = 8;
   guesses = [];
-  
-  // NO FREE HINTS - only bought hints
   hintsLeft = boughtHintsAvailable;
   
-  // Clear UI
   document.getElementById("guessList").innerHTML = "";
   document.getElementById("guessInput").value = "";
   document.getElementById("hintDisplay").textContent = "";
   document.getElementById("emojiFlash").classList.remove("show");
   document.getElementById("winOverlay").classList.add("hidden");
   
-  // Get word list
   const wordList = words[category][difficulty];
   
-  // Select random word
   if (wordList && wordList.length > 0) {
     solution = wordList[Math.floor(Math.random() * wordList.length)].toLowerCase();
   } else {
     solution = "example";
   }
   
-  // Update UI
   document.getElementById("wordLength").textContent = solution.length;
   document.getElementById("tries").textContent = tries;
   document.getElementById("hintsLeft").textContent = hintsLeft;
-  
-  // Initialize hint display with underscores
   document.getElementById("hintDisplay").textContent = "_ ".repeat(solution.length).trim();
   
-  // Reset thermometer
   updateThermometer(0);
   
-  // Focus on input field
   setTimeout(function() {
     document.getElementById("guessInput").focus();
   }, 100);
@@ -170,7 +153,6 @@ function submitGuess() {
   const input = document.getElementById("guessInput");
   const guess = input.value.toLowerCase().trim();
   
-  // Validation
   if (!guess) {
     alert("Please enter a guess!");
     return;
@@ -187,27 +169,21 @@ function submitGuess() {
     return;
   }
 
-  // Play guess sound
   playSound("guessSound");
   
-  // Process guess
   guesses.push(guess);
   tries--;
   document.getElementById("tries").textContent = tries;
 
-  // Calculate similarity
   const similarity = calculateSimilarity(guess, solution);
   const emoji = getEmojiForScore(similarity);
   
-  // Update UI
   updateThermometer(similarity);
   showEmoji(emoji);
 
-  // Add to guess history
   const guessList = document.getElementById("guessList");
   const li = document.createElement("li");
   
-  // Color based on temperature
   li.innerHTML = `
     <span>${guess}</span>
     <span style="color: ${getColorForScore(similarity)}; font-weight: bold;">
@@ -217,34 +193,28 @@ function submitGuess() {
   
   guessList.appendChild(li);
   
-  // Keep only last 3 guesses
   if (guessList.children.length > 3) {
     guessList.removeChild(guessList.firstChild);
   }
 
-  // Clear input
   input.value = "";
   
-  // Check for win
   if (guess === solution) {
     gameActive = false;
     wins++;
     coins += 10;
     
-    // Play win sound
     playSound("winSound");
     
-    // Save to localStorage
     localStorage.setItem("wordThermometerWins", wins);
     localStorage.setItem("wordThermometerCoins", coins);
     
     updateDashboard();
     showWinScreen();
-    createConfetti();
+    createConfetti(); // CONFETTI CALLED HERE
     return;
   }
 
-  // Check for game over
   if (tries === 0) {
     gameActive = false;
     setTimeout(function() {
@@ -253,19 +223,16 @@ function submitGuess() {
     }, 1000);
   }
   
-  // Focus back on input
   input.focus();
 }
 
 // ============================
-// HINT SYSTEM (20 COINS EACH)
+// HINT SYSTEM
 // ============================
 function useHint() {
   if (!gameActive) return;
   
-  // Check if we have any bought hints left
   if (hintsLeft > 0) {
-    // Use bought hint
     hintsLeft--;
     boughtHintsAvailable = hintsLeft;
     localStorage.setItem("boughtHints", hintsLeft);
@@ -274,7 +241,6 @@ function useHint() {
     return;
   }
   
-  // No hints left, need to buy with coins
   if (coins >= 20) {
     const buyHint = confirm("Buy a hint for 20 coins?");
     if (buyHint) {
@@ -282,10 +248,7 @@ function useHint() {
       localStorage.setItem("wordThermometerCoins", coins);
       updateDashboard();
       
-      // Play hint sound
       playSound("hintSound");
-      
-      // Give the hint
       giveHint();
     }
   } else {
@@ -304,14 +267,12 @@ function giveHint() {
   const hintArray = currentHint.split("");
   const hiddenPositions = [];
   
-  // Find hidden positions
   for (let i = 0; i < hintArray.length; i++) {
     if (hintArray[i] === "_") {
       hiddenPositions.push(i);
     }
   }
   
-  // Reveal random letter
   if (hiddenPositions.length > 0) {
     const randomPos = hiddenPositions[Math.floor(Math.random() * hiddenPositions.length)];
     hintArray[randomPos] = solution[randomPos];
@@ -325,7 +286,6 @@ function giveHint() {
 function calculateSimilarity(guess, solution) {
   let score = 0;
   
-  // Exact position matches
   let exactMatches = 0;
   const minLength = Math.min(guess.length, solution.length);
   
@@ -337,7 +297,6 @@ function calculateSimilarity(guess, solution) {
   
   score += (exactMatches / solution.length) * 40;
   
-  // Common letters
   const guessLetters = new Set(guess);
   const solutionLetters = new Set(solution);
   let commonCount = 0;
@@ -350,12 +309,10 @@ function calculateSimilarity(guess, solution) {
   
   score += (commonCount / Math.max(guessLetters.size, solutionLetters.size)) * 40;
   
-  // Length penalty
   const lengthDiff = Math.abs(guess.length - solution.length);
   const maxLengthDiff = Math.max(guess.length, solution.length);
   score -= (lengthDiff / maxLengthDiff) * 20;
   
-  // Ensure 0-100 range
   score = Math.max(0, Math.min(100, score));
   
   return Math.round(score);
@@ -381,7 +338,6 @@ function updateThermometer(percentage) {
   thermoFill.style.width = percentage + "%";
   
   if (goldThermometer) {
-    // Gold colors
     if (percentage < 33) {
       thermoFill.style.background = 'linear-gradient(to right, #FFD700, #FFA500)';
     } else if (percentage < 66) {
@@ -390,7 +346,6 @@ function updateThermometer(percentage) {
       thermoFill.style.background = 'linear-gradient(to right, #FF8C00, #FF4500)';
     }
   } else {
-    // Default colors
     if (percentage < 33) {
       thermoFill.style.background = 'linear-gradient(to right, #3b82f6, #22c55e)';
     } else if (percentage < 66) {
@@ -420,7 +375,6 @@ function showWinScreen() {
 }
 
 function playAgain() {
-  // Show ad after game (33% chance)
   if (!adFree && Math.random() < 0.33) {
     showAd("interstitial");
   }
@@ -478,10 +432,8 @@ function watchAdForCoins() {
     return;
   }
   
-  // Simulate ad watching
   showAd("reward");
   
-  // Reward coins
   coins += 10;
   localStorage.setItem("wordThermometerCoins", coins);
   updateDashboard();
@@ -492,7 +444,6 @@ function watchAdForCoins() {
 }
 
 function showAd(type) {
-  // This simulates showing ads
   console.log(`📺 Showing ${type} ad...`);
   
   if (type === "difficulty") {
@@ -532,28 +483,51 @@ function resetProgress() {
 }
 
 // ============================
-// CONFETTI EFFECT
+// CONFETTI EFFECT - FIXED
 // ============================
 function createConfetti() {
-  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-  const container = document.body;
+  console.log("🎉 Creating confetti...");
   
-  for (let i = 0; i < 50; i++) {
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#f97316', '#22c55e', '#3b82f6'];
+  
+  for (let i = 0; i < 80; i++) {
     const confetti = document.createElement('div');
     confetti.className = 'confetti';
+    
+    // Random position
     confetti.style.left = Math.random() * 100 + 'vw';
+    
+    // Random color
     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    
+    // Random size
+    const size = Math.random() * 10 + 5;
+    confetti.style.width = size + 'px';
+    confetti.style.height = size + 'px';
+    
+    // Random shape
+    if (Math.random() > 0.5) {
+      confetti.style.borderRadius = '50%';
+    } else {
+      confetti.style.borderRadius = '2px';
+    }
+    
+    // Random animation
+    const duration = Math.random() * 3 + 2;
+    confetti.style.animationDuration = duration + 's';
     confetti.style.animationDelay = Math.random() * 1 + 's';
     
-    container.appendChild(confetti);
+    document.body.appendChild(confetti);
     
-    setTimeout(function() {
+    // Remove after animation
+    setTimeout(() => {
       if (confetti.parentNode) {
         confetti.remove();
       }
-    }, 5000);
+    }, (duration + 1) * 1000);
   }
+  
+  console.log("✅ Confetti created!");
 }
 
 // ============================
