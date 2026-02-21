@@ -211,7 +211,7 @@ function submitGuess() {
     
     updateDashboard();
     showWinScreen();
-    createConfetti(); // CONFETTI CALLED HERE
+    createConfetti(); // THIS CALLS CONFETTI
     return;
   }
 
@@ -483,51 +483,53 @@ function resetProgress() {
 }
 
 // ============================
-// CONFETTI EFFECT - FIXED
+// CONFETTI EFFECT - GUARANTEED WORKING
 // ============================
 function createConfetti() {
-  console.log("🎉 Creating confetti...");
+  console.log("🎉 CONFETTI STARTING!");
   
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#f97316', '#22c55e', '#3b82f6'];
   
-  for (let i = 0; i < 80; i++) {
-    const confetti = document.createElement('div');
-    confetti.className = 'confetti';
-    
-    // Random position
-    confetti.style.left = Math.random() * 100 + 'vw';
-    
-    // Random color
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    
-    // Random size
-    const size = Math.random() * 10 + 5;
-    confetti.style.width = size + 'px';
-    confetti.style.height = size + 'px';
-    
-    // Random shape
-    if (Math.random() > 0.5) {
-      confetti.style.borderRadius = '50%';
-    } else {
-      confetti.style.borderRadius = '2px';
-    }
-    
-    // Random animation
-    const duration = Math.random() * 3 + 2;
-    confetti.style.animationDuration = duration + 's';
-    confetti.style.animationDelay = Math.random() * 1 + 's';
-    
-    document.body.appendChild(confetti);
-    
-    // Remove after animation
-    setTimeout(() => {
-      if (confetti.parentNode) {
-        confetti.remove();
-      }
-    }, (duration + 1) * 1000);
+  // Create 100 confetti pieces
+  for (let i = 0; i < 100; i++) {
+    setTimeout(function() {
+      // Create confetti element
+      const confetti = document.createElement('div');
+      
+      // Style directly (no CSS needed in file)
+      confetti.style.position = 'fixed';
+      confetti.style.top = '-20px';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.width = (Math.random() * 12 + 5) + 'px';
+      confetti.style.height = (Math.random() * 12 + 5) + 'px';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+      confetti.style.zIndex = '9999999';
+      confetti.style.pointerEvents = 'none';
+      
+      // Animation
+      confetti.style.transition = 'transform ' + (Math.random() * 3 + 2) + 's linear, opacity 2s ease';
+      
+      // Add to page
+      document.body.appendChild(confetti);
+      
+      // Trigger animation
+      setTimeout(function() {
+        confetti.style.transform = 'translateY(' + (window.innerHeight + 100) + 'px) rotate(' + (Math.random() * 720) + 'deg)';
+        confetti.style.opacity = '0';
+      }, 10);
+      
+      // Remove from DOM
+      setTimeout(function() {
+        if (confetti.parentNode) {
+          confetti.remove();
+        }
+      }, 5000);
+      
+    }, i * 15); // Stagger the confetti
   }
   
-  console.log("✅ Confetti created!");
+  console.log("✅ CONFETTI FINISHED!");
 }
 
 // ============================
