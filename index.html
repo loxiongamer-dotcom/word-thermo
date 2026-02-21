@@ -97,7 +97,7 @@
 
     <div id="hintDisplay"></div>
 
-    <!-- Guess Input Area (Moved to BOTTOM so thermometer stays visible) -->
+    <!-- Guess Input Area -->
     <div id="guessArea">
       <input id="guessInput" type="text" placeholder="Type your guess here..." maxlength="20">
       <button onclick="submitGuess()">Submit Guess</button>
@@ -130,7 +130,7 @@
     <button onclick="toggleHowToPlay()">← Back to Game</button>
   </div>
 
-  <!-- Store & Support Screen -->
+  <!-- STORE & SUPPORT SCREEN - FIXED PAYPAL BUTTONS -->
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
     
@@ -138,49 +138,49 @@
       <!-- Gold Thermometer -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 24px; margin-right: 10px;">🥇</span>
+          <span style="font-size: 32px; margin-right: 15px;">🥇</span>
           <div>
-            <h4 style="margin: 0;">Gold Thermometer - $1.99</h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">Shiny gold thermometer skin</p>
+            <h3 style="margin: 0; color: #f97316;">Gold Thermometer</h3>
+            <p style="margin: 5px 0; font-size: 14px;">$1.99 - Make your thermometer gold!</p>
           </div>
         </div>
-        <div id="paypal-gold-thermometer" class="paypal-button"></div>
+        <div id="paypal-gold" class="paypal-button-container"></div>
       </div>
       
       <!-- Remove Ads -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 24px; margin-right: 10px;">✨</span>
+          <span style="font-size: 32px; margin-right: 15px;">✨</span>
           <div>
-            <h4 style="margin: 0;">Remove All Ads - $4.99</h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">Play without interruptions</p>
+            <h3 style="margin: 0; color: #f97316;">Remove All Ads</h3>
+            <p style="margin: 5px 0; font-size: 14px;">$4.99 - Play ad-free forever!</p>
           </div>
         </div>
-        <div id="paypal-remove-ads" class="paypal-button"></div>
+        <div id="paypal-remove-ads" class="paypal-button-container"></div>
       </div>
       
       <!-- Hint Pack -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 24px; margin-right: 10px;">💡</span>
+          <span style="font-size: 32px; margin-right: 15px;">💡</span>
           <div>
-            <h4 style="margin: 0;">Hint Pack (3 Hints) - $0.99</h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">3 hints for when you're stuck</p>
+            <h3 style="margin: 0; color: #f97316;">Hint Pack</h3>
+            <p style="margin: 5px 0; font-size: 14px;">$0.99 - Get 3 extra hints</p>
           </div>
         </div>
-        <div id="paypal-hint-pack" class="paypal-button"></div>
+        <div id="paypal-hint" class="paypal-button-container"></div>
       </div>
       
-      <!-- Donation -->
+      <!-- Coffee Donation -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 24px; margin-right: 10px;">☕</span>
+          <span style="font-size: 32px; margin-right: 15px;">☕</span>
           <div>
-            <h4 style="margin: 0;">Buy Developer Coffee</h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">Support the developer</p>
+            <h3 style="margin: 0; color: #f97316;">Buy Me a Coffee</h3>
+            <p style="margin: 5px 0; font-size: 14px;">Any amount - Support the developer</p>
           </div>
         </div>
-        <div id="paypal-coffee" class="paypal-button"></div>
+        <div id="paypal-coffee" class="paypal-button-container"></div>
       </div>
       
       <button onclick="closeMonetization()" style="background: #6b7280; margin-top: 20px;">
@@ -191,7 +191,7 @@
 
 </div>
 
-<!-- Sound Effects (hidden audio elements) -->
+<!-- Sound Effects -->
 <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
 <audio id="guessSound" src="https://assets.mixkit.co/sfx/preview/mixkit-plastic-bubble-click-1124.mp3" preload="auto"></audio>
 <audio id="hintSound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-300.mp3" preload="auto"></audio>
@@ -199,72 +199,102 @@
 <!-- Game JavaScript -->
 <script src="game.js"></script>
 
-<!-- PayPal Buttons Setup (FIXED VERSION) -->
+<!-- PAYPAL BUTTONS - FIXED VERSION -->
 <script>
-  // Force PayPal to load properly
-  function loadPayPalButtons() {
-    if (window.paypal && window.paypal.HostedButtons) {
-      console.log("✅ PayPal loaded, creating buttons...");
-      
-      try {
-        // Gold Thermometer
-        paypal.HostedButtons({
-          hostedButtonId: "H9WB3TEW5VQFG",
-          onApprove: function(data, actions) {
-            localStorage.setItem("goldThermometer", "true");
-            alert("🎉 Gold Thermometer purchased! Restart game to see gold colors.");
-            closeMonetization();
-            return actions.restart();
-          }
-        }).render("#paypal-gold-thermometer");
-        
-        // Remove Ads
-        paypal.HostedButtons({
-          hostedButtonId: "3ZTECSYKCCYN8",
-          onApprove: function(data, actions) {
-            localStorage.setItem("adFree", "true");
-            alert("✨ Thank you! All ads removed from your game.");
-            closeMonetization();
-            return actions.restart();
-          }
-        }).render("#paypal-remove-ads");
-        
-        // Hint Pack
-        paypal.HostedButtons({
-          hostedButtonId: "7S553NMVCR4H4",
-          onApprove: function(data, actions) {
-            let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
-            boughtHints += 3;
-            localStorage.setItem("boughtHints", boughtHints);
-            alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints.`);
-            closeMonetization();
-            return actions.restart();
-          }
-        }).render("#paypal-hint-pack");
-        
-        // Coffee
-        paypal.HostedButtons({
-          hostedButtonId: "3VKBM98YVCLFG",
-          onApprove: function(data, actions) {
-            alert("☕ Thank you for your support! You just bought me a coffee!");
-            closeMonetization();
-            return actions.restart();
-          }
-        }).render("#paypal-coffee");
-        
-        console.log("✅ All PayPal buttons created!");
-      } catch (error) {
-        console.error("❌ PayPal button error:", error);
-      }
-    } else {
-      console.log("⏳ PayPal not ready, trying again...");
-      setTimeout(loadPayPalButtons, 500);
-    }
+// Function to load PayPal buttons
+function loadPayPalButtons() {
+  console.log("Loading PayPal buttons...");
+  
+  if (typeof paypal === 'undefined') {
+    console.log("PayPal not ready, retrying in 1 second...");
+    setTimeout(loadPayPalButtons, 1000);
+    return;
   }
   
-  // Start loading PayPal buttons
-  document.addEventListener('DOMContentLoaded', loadPayPalButtons);
+  console.log("PayPal loaded, creating buttons...");
+  
+  // Gold Thermometer Button
+  if (document.getElementById('paypal-gold')) {
+    paypal.HostedButtons({
+      hostedButtonId: "H9WB3TEW5VQFG",
+      onApprove: function(data) {
+        localStorage.setItem("goldThermometer", "true");
+        alert("🎉 Gold Thermometer purchased! Refresh to see gold colors.");
+        closeMonetization();
+      }
+    }).render('#paypal-gold').catch(function(err) {
+      console.error("Gold button error:", err);
+      document.getElementById('paypal-gold').innerHTML = '<button style="background:#f97316; padding:15px;">Click to Buy Gold</button>';
+    });
+  }
+  
+  // Remove Ads Button
+  if (document.getElementById('paypal-remove-ads')) {
+    paypal.HostedButtons({
+      hostedButtonId: "3ZTECSYKCCYN8",
+      onApprove: function(data) {
+        localStorage.setItem("adFree", "true");
+        alert("✨ Thank you! All ads removed from your game.");
+        closeMonetization();
+      }
+    }).render('#paypal-remove-ads').catch(function(err) {
+      console.error("Remove ads button error:", err);
+      document.getElementById('paypal-remove-ads').innerHTML = '<button style="background:#f97316; padding:15px;">Click to Remove Ads</button>';
+    });
+  }
+  
+  // Hint Pack Button
+  if (document.getElementById('paypal-hint')) {
+    paypal.HostedButtons({
+      hostedButtonId: "7S553NMVCR4H4",
+      onApprove: function(data) {
+        let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
+        boughtHints += 3;
+        localStorage.setItem("boughtHints", boughtHints);
+        alert(`💡 Hint pack purchased! You now have ${boughtHints} extra hints.`);
+        closeMonetization();
+      }
+    }).render('#paypal-hint').catch(function(err) {
+      console.error("Hint button error:", err);
+      document.getElementById('paypal-hint').innerHTML = '<button style="background:#f97316; padding:15px;">Click to Buy Hints</button>';
+    });
+  }
+  
+  // Coffee Button
+  if (document.getElementById('paypal-coffee')) {
+    paypal.HostedButtons({
+      hostedButtonId: "3VKBM98YVCLFG",
+      onApprove: function(data) {
+        alert("☕ Thank you for your support! You just bought me a coffee!");
+        closeMonetization();
+      }
+    }).render('#paypal-coffee').catch(function(err) {
+      console.error("Coffee button error:", err);
+      document.getElementById('paypal-coffee').innerHTML = '<button style="background:#f97316; padding:15px;">Click to Donate</button>';
+    });
+  }
+  
+  console.log("All PayPal buttons created!");
+}
+
+// Start loading PayPal when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(loadPayPalButtons, 2000); // Wait 2 seconds for PayPal to load
+});
 </script>
+
+<!-- Fallback buttons in case PayPal fails -->
+<style>
+.paypal-button-container {
+  min-height: 45px;
+  margin: 10px 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.paypal-button-container iframe {
+  width: 100% !important;
+}
+</style>
 
 </body>
 </html>
