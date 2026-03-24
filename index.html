@@ -21,6 +21,7 @@
   <div id="dashboard">
     <div>Coins: <span id="coins">50</span></div>
     <div>Wins: <span id="wins">0</span></div>
+    <div id="firebase-status" style="font-size: 10px; color: #ffaa00;">🔄 Connecting...</div>
     <button onclick="resetProgress()" style="padding: 4px 8px; font-size: 12px; width: auto;">Reset</button>
   </div>
 
@@ -69,7 +70,6 @@
     <button onclick="selectDifficulty('Novice')">😅 Novice (7-8 letters)</button>
     <button onclick="selectDifficulty('Expert')">🔥 Expert (9+ letters)</button>
     
-    <!-- Ad in difficulty screen -->
     <div class="ad-container" style="margin: 20px 0;">
       <div class="ad-placeholder">
         <p>📱 Advertisement</p>
@@ -113,7 +113,6 @@
       <ul id="guessList"></ul>
     </div>
 
-    <!-- Hint Section -->
     <div id="hintBar">
       <div>Hints Left: <span id="hintsLeft">0</span></div>
       <button onclick="useHint()">Buy Hint (30 coins)</button>
@@ -126,7 +125,6 @@
       <button onclick="submitGuess()">Submit Guess</button>
     </div>
 
-    <!-- BOTTOM BANNER AD - Always visible under Submit Guess -->
     <div id="bottomBannerAd" class="ad-container" style="margin-top: 20px;">
       <div class="ad-placeholder">
         <p>📱 Advertisement</p>
@@ -158,7 +156,6 @@
       <p><strong>💰 Store:</strong> Buy hint packs, remove ads, golden skin!</p>
     </div>
     
-    <!-- Ad in How to Play -->
     <div class="ad-container" style="margin: 20px 0;">
       <div class="ad-placeholder">
         <p>📱 Advertisement</p>
@@ -172,7 +169,6 @@
   <div id="monetization" class="hidden">
     <h2>💰 Store & Support</h2>
     
-    <!-- Ad in Store -->
     <div class="ad-container" style="margin-bottom: 20px;">
       <div class="ad-placeholder">
         <p>📱 Advertisement</p>
@@ -180,8 +176,6 @@
     </div>
     
     <div class="purchase-options">
-      
-      <!-- Gold Thermometer -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">🥇</span>
@@ -195,7 +189,6 @@
         </a>
       </div>
       
-      <!-- Remove Ads -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">✨</span>
@@ -209,7 +202,6 @@
         </a>
       </div>
       
-      <!-- Hint Pack -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">💡</span>
@@ -223,7 +215,6 @@
         </a>
       </div>
       
-      <!-- Coffee Donation -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">☕</span>
@@ -256,9 +247,9 @@
   <source src="idoberg-fun-indie-game-type-jazz-music-483446.mp3" type="audio/mp3">
 </audio>
 
-<!-- ============ FIREBASE INTEGRATION ============ -->
+<!-- ============ FIREBASE INTEGRATION WITH VISUAL INDICATOR ============ -->
 <script>
-// Your new Firebase configuration
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCU2Lzv27b6xMhFhH_TOs6rhjbIG5uZNdA",
   authDomain: "word-thermometer-game.firebaseapp.com",
@@ -268,21 +259,53 @@ const firebaseConfig = {
   appId: "1:38963618564:web:41b32fac1663e3838f2651"
 };
 
-// Initialize Firebase (using compatibility SDK)
+// Function to update status indicator
+function updateFirebaseStatus(status, message) {
+  const statusDiv = document.getElementById('firebase-status');
+  if (!statusDiv) return;
+  
+  statusDiv.textContent = message;
+  
+  switch(status) {
+    case 'connected':
+      statusDiv.style.color = '#81c784';
+      statusDiv.style.backgroundColor = 'rgba(129, 199, 132, 0.2)';
+      statusDiv.style.padding = '2px 8px';
+      statusDiv.style.borderRadius = '12px';
+      break;
+    case 'connecting':
+      statusDiv.style.color = '#ffaa00';
+      statusDiv.style.backgroundColor = 'rgba(255, 170, 0, 0.2)';
+      statusDiv.style.padding = '2px 8px';
+      statusDiv.style.borderRadius = '12px';
+      break;
+    case 'offline':
+      statusDiv.style.color = '#ff6b6b';
+      statusDiv.style.backgroundColor = 'rgba(255, 107, 107, 0.2)';
+      statusDiv.style.padding = '2px 8px';
+      statusDiv.style.borderRadius = '12px';
+      break;
+  }
+}
+
 let firebaseReady = false;
 let currentUserId = null;
 let database = null;
+
+updateFirebaseStatus('connecting', '🔄 Connecting to cloud...');
 
 try {
   if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
     database = firebase.database();
-    console.log("Firebase initialized with new project");
+    console.log("Firebase initialized");
+    updateFirebaseStatus('connecting', '🔄 Authenticating...');
     
     // Anonymous authentication
     firebase.auth().signInAnonymously()
       .then(() => {
         console.log("Firebase: Anonymous auth successful");
+        updateFirebaseStatus('connecting', '🔄 Loading saved data...');
         firebaseReady = true;
         firebase.auth().onAuthStateChanged((user) => {
           if (user) {
@@ -294,15 +317,18 @@ try {
       })
       .catch((error) => {
         console.error("Firebase auth error:", error);
+        updateFirebaseStatus('offline', '⚠️ Cloud offline - using local save');
         loadGameFromLocalStorage();
       });
   } else {
-    console.log("Firebase already initialized or not available");
+    console.log("Firebase already initialized");
     loadGameFromLocalStorage();
+    updateFirebaseStatus('offline', '💾 Local save only');
   }
 } catch (error) {
   console.error("Firebase init error:", error);
   loadGameFromLocalStorage();
+  updateFirebaseStatus('offline', '💾 Local save only');
 }
 
 // Game state
@@ -334,8 +360,20 @@ function saveGameToFirebase() {
   };
   
   database.ref(`users/${currentUserId}/gameData`).set(gameData)
-    .then(() => console.log("Game saved to Firebase"))
-    .catch(err => console.error("Firebase save error:", err));
+    .then(() => {
+      console.log("Game saved to Firebase");
+      updateFirebaseStatus('connected', '✅ Cloud save: Connected');
+      setTimeout(() => {
+        const statusDiv = document.getElementById('firebase-status');
+        if (statusDiv && statusDiv.textContent === '✅ Cloud save: Connected') {
+          statusDiv.textContent = '☁️ Cloud save active';
+        }
+      }, 2000);
+    })
+    .catch(err => {
+      console.error("Firebase save error:", err);
+      updateFirebaseStatus('offline', '⚠️ Save failed - offline');
+    });
 }
 
 // Load from Firebase
@@ -348,13 +386,25 @@ function loadGameFromFirebase() {
       if (data && window.gameState) {
         Object.assign(window.gameState, data);
         console.log("Game loaded from Firebase");
+        updateFirebaseStatus('connected', '✅ Cloud connected');
+        setTimeout(() => {
+          const statusDiv = document.getElementById('firebase-status');
+          if (statusDiv && statusDiv.textContent === '✅ Cloud connected') {
+            statusDiv.textContent = '☁️ Cloud save active';
+          }
+        }, 2000);
         applyPurchases();
         updateDisplay();
+      } else {
+        console.log("No Firebase data, using local");
+        updateFirebaseStatus('offline', '💾 Local save only');
+        loadGameFromLocalStorage();
       }
-      saveGameToLocalStorage(); // Backup
+      saveGameToLocalStorage();
     })
     .catch(err => {
       console.error("Firebase load error:", err);
+      updateFirebaseStatus('offline', '⚠️ Cannot reach cloud');
       loadGameFromLocalStorage();
     });
 }
@@ -408,6 +458,8 @@ function updateDisplay() {
 setInterval(() => {
   if (window.gameState && firebaseReady) {
     saveGameToFirebase();
+  } else if (window.gameState) {
+    saveGameToLocalStorage();
   }
 }, 30000);
 </script>
