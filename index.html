@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Word Thermometer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Word Thermometer - Guess Words, Heat It Up!</title>
   <link rel="stylesheet" href="style.css">
+  
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=ARmMNZwfsDmbbk1l-DyJ-0GGnefRl4i4KcZPH3Wt7hCv0G3wGL28DHSmWSHm0yN9-bDq2ZfqS7WnHtgJ&currency=USD"></script>
+  
+  <!-- Firebase SDK (Compatibility version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -182,7 +190,7 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Make your thermometer shine gold!</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank">
+        <a href="https://www.paypal.com/ncp/payment/H9WB3TEW5VQFG" target="_blank" class="paypal-link" data-product="gold">
           <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💰 BUY NOW WITH PAYPAL</button>
         </a>
       </div>
@@ -196,7 +204,7 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Play ad-free forever!</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank">
+        <a href="https://www.paypal.com/ncp/payment/3ZTECSYKCCYN8" target="_blank" class="paypal-link" data-product="adfree">
           <button style="background: linear-gradient(135deg, #f97316, #ea580c);">✨ BUY NOW WITH PAYPAL</button>
         </a>
       </div>
@@ -207,10 +215,10 @@
           <span style="font-size: 32px; margin-right: 15px;">💡</span>
           <div>
             <h3 style="margin: 0; color: #f97316;">Hint Pack - $0.99</h3>
-            <p style="margin: 5px 0 0 0; font-size: 14px;">Get 3 extra hints</p>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Get 3 extra hints + 100 coins!</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank">
+        <a href="https://www.paypal.com/ncp/payment/7S553NMVCR4H4" target="_blank" class="paypal-link" data-product="hints">
           <button style="background: linear-gradient(135deg, #f97316, #ea580c);">💡 BUY NOW WITH PAYPAL</button>
         </a>
       </div>
@@ -224,7 +232,7 @@
             <p style="margin: 5px 0 0 0; font-size: 14px;">Any amount - Support the developer</p>
           </div>
         </div>
-        <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank">
+        <a href="https://www.paypal.com/ncp/payment/3VKBM98YVCLFG" target="_blank" class="paypal-link" data-product="coffee">
           <button style="background: linear-gradient(135deg, #f97316, #ea580c);">☕ DONATE WITH PAYPAL</button>
         </a>
       </div>
@@ -248,167 +256,232 @@
   <source src="idoberg-fun-indie-game-type-jazz-music-483446.mp3" type="audio/mp3">
 </audio>
 
-<!-- Game JavaScript -->
-<script src="game.js"></script>
-
-<!-- Hint Pack Purchase Handler -->
+<!-- ============ FIREBASE INTEGRATION ============ -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('hints') === 'bought') {
-    let boughtHints = parseInt(localStorage.getItem("boughtHints")) || 0;
-    boughtHints += 3;
-    localStorage.setItem("boughtHints", boughtHints);
-    alert("💡 3 hints added to your account! Thank you for your purchase!");
+// Your new Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCU2Lzv27b6xMhFhH_TOs6rhjbIG5uZNdA",
+  authDomain: "word-thermometer-game.firebaseapp.com",
+  projectId: "word-thermometer-game",
+  storageBucket: "word-thermometer-game.firebasestorage.app",
+  messagingSenderId: "38963618564",
+  appId: "1:38963618564:web:41b32fac1663e3838f2651"
+};
+
+// Initialize Firebase (using compatibility SDK)
+let firebaseReady = false;
+let currentUserId = null;
+let database = null;
+
+try {
+  if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log("Firebase initialized with new project");
+    
+    // Anonymous authentication
+    firebase.auth().signInAnonymously()
+      .then(() => {
+        console.log("Firebase: Anonymous auth successful");
+        firebaseReady = true;
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            currentUserId = user.uid;
+            console.log("Firebase: User ID:", currentUserId);
+            loadGameFromFirebase();
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Firebase auth error:", error);
+        loadGameFromLocalStorage();
+      });
+  } else {
+    console.log("Firebase already initialized or not available");
+    loadGameFromLocalStorage();
   }
-});
+} catch (error) {
+  console.error("Firebase init error:", error);
+  loadGameFromLocalStorage();
+}
 
-document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
-  link.addEventListener('click', function() {
-    const currentUrl = window.location.href;
-    const returnUrl = currentUrl + (currentUrl.includes('?') ? '&hints=bought' : '?hints=bought');
-    this.href = this.href + '?returnUrl=' + encodeURIComponent(returnUrl);
-  });
-});
-</script>
+// Game state
+if (!window.gameState) {
+  window.gameState = {
+    coins: 50,
+    wins: 0,
+    heat: 0,
+    purchasedGold: false,
+    adsRemoved: false,
+    extraHints: 0,
+    totalGames: 0
+  };
+}
 
- <script>
-// Purchase detection and processing
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Store system loaded");
-    
-    // Check for return from PayPal purchases
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Check for Gold Thermometer purchase
-    if (urlParams.get('gold') === 'bought') {
-        console.log("Gold Thermometer purchased");
-        if (typeof window.gameState !== 'undefined') {
-            window.gameState.purchasedGold = true;
-            window.gameState.coins = (window.gameState.coins || 50) + 50;
-            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-            alert("🥇 Gold Thermometer unlocked! +50 coins added!");
-            // Apply gold theme
-            document.getElementById('thermometer')?.classList.add('gold-thermometer');
-            document.getElementById('thermoFill')?.classList.add('gold-fill');
-        }
-        // Remove the parameter from URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    // Check for Remove Ads purchase
-    if (urlParams.get('adfree') === 'bought') {
-        console.log("Ads removed purchase");
-        if (typeof window.gameState !== 'undefined') {
-            window.gameState.adsRemoved = true;
-            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-            alert("✨ Ads removed forever! Thank you for your support!");
-            // Hide all ads
-            document.querySelectorAll('.ad-container').forEach(ad => {
-                ad.style.display = 'none';
-            });
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    // Check for Hint Pack purchase
-    if (urlParams.get('hints') === 'bought') {
-        console.log("Hint pack purchased");
-        if (typeof window.gameState !== 'undefined') {
-            // Add 3 hints to game state
-            let currentHints = window.gameState.extraHints || 0;
-            window.gameState.extraHints = currentHints + 3;
-            window.gameState.coins = (window.gameState.coins || 50) + 100;
-            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-            alert("💡 Hint pack purchased! +3 hints & +100 coins added!");
-            // Update hint display if game is running
-            if (typeof updateHintDisplay === 'function') {
-                updateHintDisplay();
-            }
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    // Check for Coffee donation
-    if (urlParams.get('coffee') === 'bought') {
-        console.log("Coffee donation received");
-        if (typeof window.gameState !== 'undefined') {
-            window.gameState.coins = (window.gameState.coins || 50) + 10;
-            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-            alert("☕ Thank you for the coffee! +10 bonus coins!");
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    // Load saved game state with purchases
-    const savedGame = localStorage.getItem('wordThermometerSave');
-    if (savedGame) {
-        try {
-            const gameData = JSON.parse(savedGame);
-            if (window.gameState) {
-                Object.assign(window.gameState, gameData);
-            }
-            // Apply gold theme if purchased
-            if (gameData.purchasedGold) {
-                document.getElementById('thermometer')?.classList.add('gold-thermometer');
-                document.getElementById('thermoFill')?.classList.add('gold-fill');
-            }
-            // Hide ads if purchased
-            if (gameData.adsRemoved) {
-                document.querySelectorAll('.ad-container').forEach(ad => {
-                    ad.style.display = 'none';
-                });
-            }
-        } catch(e) {}
-    }
-    
-    // Update PayPal links to include return URL
-    updatePayPalLinks();
-});
+// Save to Firebase
+function saveGameToFirebase() {
+  if (!firebaseReady || !currentUserId || !window.gameState) return;
+  
+  const gameData = {
+    coins: window.gameState.coins || 50,
+    wins: window.gameState.wins || 0,
+    heat: window.gameState.heat || 0,
+    purchasedGold: window.gameState.purchasedGold || false,
+    adsRemoved: window.gameState.adsRemoved || false,
+    extraHints: window.gameState.extraHints || 0,
+    totalGames: window.gameState.totalGames || 0,
+    lastUpdated: Date.now()
+  };
+  
+  database.ref(`users/${currentUserId}/gameData`).set(gameData)
+    .then(() => console.log("Game saved to Firebase"))
+    .catch(err => console.error("Firebase save error:", err));
+}
 
-// Update PayPal links to return to game with purchase confirmation
-function updatePayPalLinks() {
-    const currentUrl = window.location.href.split('?')[0];
-    
-    const links = {
-        'H9WB3TEW5VQFG': 'gold=bought',
-        '3ZTECSYKCCYN8': 'adfree=bought',
-        '7S553NMVCR4H4': 'hints=bought',
-        '3VKBM98YVCLFG': 'coffee=bought'
-    };
-    
-    document.querySelectorAll('a[href*="paypal.com/ncp/payment/"]').forEach(link => {
-        for (const [buttonId, param] of Object.entries(links)) {
-            if (link.href.includes(buttonId)) {
-                const separator = link.href.includes('?') ? '&' : '?';
-                link.href = `${link.href}${separator}returnUrl=${encodeURIComponent(currentUrl + '?' + param)}`;
-                console.log(`Updated PayPal link for ${buttonId}`);
-                break;
-            }
-        }
+// Load from Firebase
+function loadGameFromFirebase() {
+  if (!firebaseReady || !currentUserId) return;
+  
+  database.ref(`users/${currentUserId}/gameData`).once('value')
+    .then((snapshot) => {
+      const data = snapshot.val();
+      if (data && window.gameState) {
+        Object.assign(window.gameState, data);
+        console.log("Game loaded from Firebase");
+        applyPurchases();
+        updateDisplay();
+      }
+      saveGameToLocalStorage(); // Backup
+    })
+    .catch(err => {
+      console.error("Firebase load error:", err);
+      loadGameFromLocalStorage();
     });
 }
 
-// Function to manually add coins (for testing)
-window.addCoins = function(amount) {
-    if (window.gameState) {
-        window.gameState.coins = (window.gameState.coins || 50) + amount;
-        localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-        alert(`+${amount} coins added!`);
-        if (typeof updateDisplay === 'function') updateDisplay();
-    }
-};
+// Local storage functions
+function saveGameToLocalStorage() {
+  if (window.gameState) {
+    localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+  }
+}
 
-// Function to add extra hints (for testing)
-window.addHints = function(count) {
-    if (window.gameState) {
-        window.gameState.extraHints = (window.gameState.extraHints || 0) + count;
-        localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
-        alert(`+${count} hints added!`);
-        if (typeof updateHintDisplay === 'function') updateHintDisplay();
-    }
-};
-</script> 
+function loadGameFromLocalStorage() {
+  const saved = localStorage.getItem('wordThermometerSave');
+  if (saved && window.gameState) {
+    try {
+      const data = JSON.parse(saved);
+      Object.assign(window.gameState, data);
+      console.log("Game loaded from localStorage");
+      applyPurchases();
+      updateDisplay();
+    } catch(e) {}
+  }
+}
+
+// Apply purchases to UI
+function applyPurchases() {
+  if (!window.gameState) return;
   
+  if (window.gameState.purchasedGold) {
+    const thermometer = document.getElementById('thermometer');
+    const thermoFill = document.getElementById('thermoFill');
+    if (thermometer) thermometer.classList.add('gold-thermometer');
+    if (thermoFill) thermoFill.classList.add('gold-fill');
+  }
+  
+  if (window.gameState.adsRemoved) {
+    document.querySelectorAll('.ad-container').forEach(ad => {
+      ad.style.display = 'none';
+    });
+  }
+}
+
+function updateDisplay() {
+  const coinsEl = document.getElementById('coins');
+  const winsEl = document.getElementById('wins');
+  if (coinsEl) coinsEl.textContent = window.gameState.coins || 50;
+  if (winsEl) winsEl.textContent = window.gameState.wins || 0;
+}
+
+// Auto-save every 30 seconds
+setInterval(() => {
+  if (window.gameState && firebaseReady) {
+    saveGameToFirebase();
+  }
+}, 30000);
+</script>
+
+<!-- ============ PURCHASE DETECTION ============ -->
+<script>
+// Update PayPal links with return URL
+document.addEventListener('DOMContentLoaded', function() {
+  const currentUrl = window.location.href.split('?')[0];
+  
+  const productParams = {
+    'H9WB3TEW5VQFG': 'gold=bought',
+    '3ZTECSYKCCYN8': 'adfree=bought',
+    '7S553NMVCR4H4': 'hints=bought',
+    '3VKBM98YVCLFG': 'coffee=bought'
+  };
+  
+  document.querySelectorAll('.paypal-link').forEach(link => {
+    for (const [buttonId, param] of Object.entries(productParams)) {
+      if (link.href.includes(buttonId)) {
+        const separator = link.href.includes('?') ? '&' : '?';
+        link.href = `${link.href}${separator}returnUrl=${encodeURIComponent(currentUrl + '?' + param)}`;
+        break;
+      }
+    }
+  });
+  
+  // Check for return from PayPal
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  if (urlParams.get('gold') === 'bought') {
+    window.gameState.purchasedGold = true;
+    window.gameState.coins += 50;
+    saveGameToLocalStorage();
+    saveGameToFirebase();
+    alert("🥇 Gold Thermometer unlocked! +50 coins added!");
+    applyPurchases();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.get('adfree') === 'bought') {
+    window.gameState.adsRemoved = true;
+    saveGameToLocalStorage();
+    saveGameToFirebase();
+    alert("✨ Ads removed forever! Thank you for your support!");
+    applyPurchases();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.get('hints') === 'bought') {
+    window.gameState.extraHints = (window.gameState.extraHints || 0) + 3;
+    window.gameState.coins += 100;
+    saveGameToLocalStorage();
+    saveGameToFirebase();
+    alert("💡 Hint pack purchased! +3 hints & +100 coins added!");
+    if (typeof updateHintDisplay === 'function') updateHintDisplay();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  if (urlParams.get('coffee') === 'bought') {
+    window.gameState.coins += 10;
+    saveGameToLocalStorage();
+    saveGameToFirebase();
+    alert("☕ Thank you for the coffee! +10 bonus coins!");
+    updateDisplay();
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  updateDisplay();
+});
+</script>
+
+<!-- Game JavaScript -->
+<script src="game.js"></script>
+
 </body>
 </html>
