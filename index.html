@@ -12,6 +12,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7569808679276695"
+     crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -125,6 +129,14 @@
       <button onclick="submitGuess()">Submit Guess</button>
     </div>
 
+    <!-- Watch Ad for Coins Button -->
+    <div style="text-align: center; margin: 15px 0;">
+      <button onclick="watchRewardedAd()" style="background: linear-gradient(135deg, #4caf50, #2e7d32); padding: 12px 20px; font-size: 16px; font-weight: bold; width: 100%;">
+        🎬 Watch Ad for 25 Coins
+      </button>
+      <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 5px;">Watch a short video to earn coins!</small>
+    </div>
+
     <div id="bottomBannerAd" class="ad-container" style="margin-top: 20px;">
       <div class="ad-placeholder">
         <p>📱 Advertisement</p>
@@ -154,6 +166,7 @@
       <p><strong>💡 Hints:</strong> All hints cost 30 coins</p>
       <p><strong>🪙 Coins:</strong> Start with 50 coins, +10 for winning</p>
       <p><strong>💰 Store:</strong> Buy hint packs, remove ads, golden skin!</p>
+      <p><strong>🎬 Ads:</strong> Watch rewarded ads for +25 coins!</p>
     </div>
     
     <div class="ad-container" style="margin: 20px 0;">
@@ -176,6 +189,19 @@
     </div>
     
     <div class="purchase-options">
+      <!-- Watch Ad for Coins Button (also in store) -->
+      <div class="purchase-item" style="background: linear-gradient(135deg, #2e7d32, #1b5e20);">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+          <span style="font-size: 32px; margin-right: 15px;">🎬</span>
+          <div>
+            <h3 style="margin: 0; color: #ffd700;">Watch Ad - 25 Coins</h3>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Free coins! Just watch a short video</p>
+          </div>
+        </div>
+        <button onclick="watchRewardedAd()" style="background: linear-gradient(135deg, #4caf50, #2e7d32); width: 100%;">🎬 WATCH AD FOR COINS</button>
+      </div>
+      
+      <!-- Gold Thermometer -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">🥇</span>
@@ -189,6 +215,7 @@
         </a>
       </div>
       
+      <!-- Remove Ads -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">✨</span>
@@ -202,6 +229,7 @@
         </a>
       </div>
       
+      <!-- Hint Pack -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">💡</span>
@@ -215,6 +243,7 @@
         </a>
       </div>
       
+      <!-- Coffee Donation -->
       <div class="purchase-item">
         <div style="display: flex; align-items: center; margin-bottom: 15px;">
           <span style="font-size: 32px; margin-right: 15px;">☕</span>
@@ -462,6 +491,79 @@ setInterval(() => {
     saveGameToLocalStorage();
   }
 }, 30000);
+</script>
+
+<!-- ============ ADSENSE REWARDED ADS ============ -->
+<script>
+// Rewarded Ad Function for Coins
+let adPlaying = false;
+
+function watchRewardedAd() {
+  // Check if player already bought ad-free
+  if (window.gameState && window.gameState.adsRemoved) {
+    alert("✨ You have the ad-free version! No ads to watch.");
+    return;
+  }
+  
+  if (adPlaying) {
+    alert("📺 An ad is already playing. Please wait.");
+    return;
+  }
+  
+  const feedback = document.getElementById('feedback');
+  if (feedback) feedback.textContent = "📺 Loading ad...";
+  
+  adPlaying = true;
+  
+  // Create a simulated ad experience (real ads will replace this once AdSense is active)
+  // This is a placeholder that gives coins after 5 seconds
+  if (typeof adsbygoogle !== 'undefined') {
+    // Real AdSense ad
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-7569808679276695",
+      tag: 'rewarded',
+      rewarded: {
+        beforeAd: function() {
+          console.log("Ad starting");
+          if (feedback) feedback.textContent = "🎬 Ad playing...";
+        },
+        afterAd: function() {
+          console.log("Ad finished");
+          adPlaying = false;
+        },
+        adViewed: function() {
+          // GIVE COINS ONLY AFTER AD IS WATCHED
+          if (window.gameState) {
+            window.gameState.coins += 25;
+            updateDisplay();
+            saveGameToFirebase();
+            if (feedback) feedback.textContent = "✅ +25 coins! Thank you for watching!";
+            alert("🎉 +25 coins added to your account!");
+          }
+        },
+        adDismissed: function() {
+          adPlaying = false;
+          if (feedback) feedback.textContent = "❌ Ad skipped - no coins awarded";
+        }
+      }
+    });
+  } else {
+    // Fallback simulation (for testing before AdSense is active)
+    if (feedback) feedback.textContent = "🎬 Demo ad playing (5 seconds)...";
+    
+    setTimeout(() => {
+      // Simulate ad completion
+      if (window.gameState) {
+        window.gameState.coins += 25;
+        updateDisplay();
+        saveGameToFirebase();
+        if (feedback) feedback.textContent = "✅ +25 coins! (Demo mode)";
+        alert("🎉 +25 coins added! (This is a demo - real ads will appear once AdSense is active)");
+      }
+      adPlaying = false;
+    }, 5000);
+  }
+}
 </script>
 
 <!-- ============ PURCHASE DETECTION ============ -->
