@@ -272,5 +272,143 @@ document.querySelectorAll('a[href*="7S553NMVCR4H4"]').forEach(link => {
 });
 </script>
 
+ <script>
+// Purchase detection and processing
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Store system loaded");
+    
+    // Check for return from PayPal purchases
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check for Gold Thermometer purchase
+    if (urlParams.get('gold') === 'bought') {
+        console.log("Gold Thermometer purchased");
+        if (typeof window.gameState !== 'undefined') {
+            window.gameState.purchasedGold = true;
+            window.gameState.coins = (window.gameState.coins || 50) + 50;
+            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+            alert("🥇 Gold Thermometer unlocked! +50 coins added!");
+            // Apply gold theme
+            document.getElementById('thermometer')?.classList.add('gold-thermometer');
+            document.getElementById('thermoFill')?.classList.add('gold-fill');
+        }
+        // Remove the parameter from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Check for Remove Ads purchase
+    if (urlParams.get('adfree') === 'bought') {
+        console.log("Ads removed purchase");
+        if (typeof window.gameState !== 'undefined') {
+            window.gameState.adsRemoved = true;
+            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+            alert("✨ Ads removed forever! Thank you for your support!");
+            // Hide all ads
+            document.querySelectorAll('.ad-container').forEach(ad => {
+                ad.style.display = 'none';
+            });
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Check for Hint Pack purchase
+    if (urlParams.get('hints') === 'bought') {
+        console.log("Hint pack purchased");
+        if (typeof window.gameState !== 'undefined') {
+            // Add 3 hints to game state
+            let currentHints = window.gameState.extraHints || 0;
+            window.gameState.extraHints = currentHints + 3;
+            window.gameState.coins = (window.gameState.coins || 50) + 100;
+            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+            alert("💡 Hint pack purchased! +3 hints & +100 coins added!");
+            // Update hint display if game is running
+            if (typeof updateHintDisplay === 'function') {
+                updateHintDisplay();
+            }
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Check for Coffee donation
+    if (urlParams.get('coffee') === 'bought') {
+        console.log("Coffee donation received");
+        if (typeof window.gameState !== 'undefined') {
+            window.gameState.coins = (window.gameState.coins || 50) + 10;
+            localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+            alert("☕ Thank you for the coffee! +10 bonus coins!");
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // Load saved game state with purchases
+    const savedGame = localStorage.getItem('wordThermometerSave');
+    if (savedGame) {
+        try {
+            const gameData = JSON.parse(savedGame);
+            if (window.gameState) {
+                Object.assign(window.gameState, gameData);
+            }
+            // Apply gold theme if purchased
+            if (gameData.purchasedGold) {
+                document.getElementById('thermometer')?.classList.add('gold-thermometer');
+                document.getElementById('thermoFill')?.classList.add('gold-fill');
+            }
+            // Hide ads if purchased
+            if (gameData.adsRemoved) {
+                document.querySelectorAll('.ad-container').forEach(ad => {
+                    ad.style.display = 'none';
+                });
+            }
+        } catch(e) {}
+    }
+    
+    // Update PayPal links to include return URL
+    updatePayPalLinks();
+});
+
+// Update PayPal links to return to game with purchase confirmation
+function updatePayPalLinks() {
+    const currentUrl = window.location.href.split('?')[0];
+    
+    const links = {
+        'H9WB3TEW5VQFG': 'gold=bought',
+        '3ZTECSYKCCYN8': 'adfree=bought',
+        '7S553NMVCR4H4': 'hints=bought',
+        '3VKBM98YVCLFG': 'coffee=bought'
+    };
+    
+    document.querySelectorAll('a[href*="paypal.com/ncp/payment/"]').forEach(link => {
+        for (const [buttonId, param] of Object.entries(links)) {
+            if (link.href.includes(buttonId)) {
+                const separator = link.href.includes('?') ? '&' : '?';
+                link.href = `${link.href}${separator}returnUrl=${encodeURIComponent(currentUrl + '?' + param)}`;
+                console.log(`Updated PayPal link for ${buttonId}`);
+                break;
+            }
+        }
+    });
+}
+
+// Function to manually add coins (for testing)
+window.addCoins = function(amount) {
+    if (window.gameState) {
+        window.gameState.coins = (window.gameState.coins || 50) + amount;
+        localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+        alert(`+${amount} coins added!`);
+        if (typeof updateDisplay === 'function') updateDisplay();
+    }
+};
+
+// Function to add extra hints (for testing)
+window.addHints = function(count) {
+    if (window.gameState) {
+        window.gameState.extraHints = (window.gameState.extraHints || 0) + count;
+        localStorage.setItem('wordThermometerSave', JSON.stringify(window.gameState));
+        alert(`+${count} hints added!`);
+        if (typeof updateHintDisplay === 'function') updateHintDisplay();
+    }
+};
+</script> 
+  
 </body>
 </html>
